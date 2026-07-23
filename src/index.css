@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+:root {
+  font-family: "Segoe UI", "Be Vietnam Pro", system-ui, -apple-system, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: #0f2b46;
+  background: linear-gradient(180deg, #bfe3ff 0%, #dff2ff 45%, #fdf3e3 100%);
+  overflow-x: hidden;
+}
+
+body[data-sky="sunset"] {
+  background: linear-gradient(180deg, #ffd9a0 0%, #ffb4a2 45%, #c9b6ff 100%);
+}
+
+body[data-sky="night"] {
+  background: linear-gradient(180deg, #1e2a5a 0%, #33418a 55%, #6f5fae 100%);
+  color: #eef2ff;
+}
+
+.glass {
+  @apply bg-white/65 backdrop-blur-md border border-white/70 rounded-2xl;
+  box-shadow: 0 8px 32px rgba(80, 140, 200, 0.18);
+}
+
+body[data-sky="night"] .glass {
+  @apply bg-white/15 border-white/25;
+  box-shadow: 0 8px 32px rgba(10, 15, 50, 0.35);
+}
+
+.glass-strong {
+  @apply bg-white/80 backdrop-blur-xl border border-white/80 rounded-2xl;
+  box-shadow: 0 10px 40px rgba(80, 140, 200, 0.25);
+}
+
+body[data-sky="night"] .glass-strong {
+  @apply bg-[#26305e]/85 border-white/20;
+}
+
+/* ---- clouds ---- */
+@keyframes cloud-drift {
+  from { transform: translateX(-15vw); }
+  to { transform: translateX(115vw); }
+}
+
+.cloud {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 999px;
+  filter: blur(6px);
+  animation: cloud-drift linear infinite;
+}
+
+/* ---- floating particles ---- */
+@keyframes particle-float {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.5; }
+  50% { transform: translateY(-26px) scale(1.25); opacity: 1; }
+}
+
+.particle {
+  position: absolute;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 235, 170, 0.95), rgba(255, 235, 170, 0));
+  animation: particle-float ease-in-out infinite;
+}
+
+/* ---- sun ---- */
+.sun-glow {
+  position: absolute;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 236, 170, 0.95) 0%, rgba(255, 214, 120, 0.35) 45%, rgba(255, 214, 120, 0) 70%);
+}
+
+/* ---- glowing flight path ---- */
+.flight-path {
+  filter: drop-shadow(0 0 6px rgba(255, 214, 100, 0.9));
+}
+
+@keyframes dash-flow {
+  to { stroke-dashoffset: -32; }
+}
+
+.flight-path-dash {
+  animation: dash-flow 1.6s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cloud, .particle, .flight-path-dash { animation: none !important; }
+}
+
+[data-reduced-motion="true"] .cloud,
+[data-reduced-motion="true"] .particle,
+[data-reduced-motion="true"] .flight-path-dash {
+  animation: none !important;
+}
+
+/* scrollbar for journey */
+.journey-scroll::-webkit-scrollbar { height: 8px; }
+.journey-scroll::-webkit-scrollbar-thumb {
+  background: rgba(120, 170, 220, 0.5);
+  border-radius: 8px;
+}
+.journey-scroll::-webkit-scrollbar-track { background: transparent; }
