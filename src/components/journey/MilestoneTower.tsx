@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import type { MilestoneDef } from '../../types'
 import towerBlue from '../../assets/towers/tower-blue.png'
-import archeryBlue from '../../assets/towers/archery-blue.png'
+import houseBlue from '../../assets/towers/house-blue.png'
 import barracksBlue from '../../assets/towers/barracks-blue.png'
 import monasteryBlue from '../../assets/towers/monastery-blue.png'
 import barracksRed from '../../assets/towers/barracks-red.png'
@@ -32,8 +32,8 @@ interface TierSprite {
  * → tháp hoàng kim → pháo đài lửa → lâu đài huyền thoại.
  */
 const TIER_SPRITES: TierSprite[] = [
-  { src: towerBlue, width: 100, aspect: 2 },                                                              // 1200 — xanh dương
-  { src: archeryBlue, width: 124, aspect: 256 / 192, filter: 'hue-rotate(-45deg) saturate(1.2)' },        // 1400 — teal
+  { src: houseBlue, width: 98, aspect: 192 / 128 },                                                       // 1200 — ngôi nhà khởi đầu
+  { src: towerBlue, width: 100, aspect: 2, filter: 'hue-rotate(-25deg) saturate(1.15)' },                 // 1400 — tháp teal
   { src: barracksBlue, width: 130, aspect: 256 / 192, filter: 'saturate(1.35) brightness(0.9)' },         // 1600 — xanh đậm
   { src: monasteryBlue, width: 112, aspect: 320 / 192, filter: 'hue-rotate(55deg)' },                     // 1800 — tím
   { src: towerBlue, width: 104, aspect: 2, filter: 'sepia(1) saturate(2.4) hue-rotate(-15deg) brightness(1.08)' }, // 2000 — hoàng kim

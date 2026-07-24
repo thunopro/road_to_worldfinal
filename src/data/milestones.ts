@@ -1,8 +1,8 @@
 import type { MilestoneDef } from '../types'
 
 export const MILESTONES: MilestoneDef[] = [
-  { rating: 1200, color: '#3b82f6', colorSoft: '#bfdbfe', name: 'Tháp Khởi Hành', rewardDesc: 'Huy hiệu Người Mở Đường + 150 xu' },
-  { rating: 1400, color: '#14b8a6', colorSoft: '#99f6e4', name: 'Đảo Gió Teal', rewardDesc: 'Khăn choàng teal + 150 xu' },
+  { rating: 1200, color: '#3b82f6', colorSoft: '#bfdbfe', name: 'Làng Khởi Hành', rewardDesc: 'Huy hiệu Người Mở Đường + 150 xu' },
+  { rating: 1400, color: '#14b8a6', colorSoft: '#99f6e4', name: 'Tháp Gió Teal', rewardDesc: 'Khăn choàng teal + 150 xu' },
   { rating: 1600, color: '#1d4ed8', colorSoft: '#c7d2fe', name: 'Tháp Đại Dương', rewardDesc: 'Huy hiệu Expert-in-training + 150 xu' },
   { rating: 1800, color: '#8b5cf6', colorSoft: '#ddd6fe', name: 'Đỉnh Tím Mộng', rewardDesc: 'Hiệu ứng cánh tím + 150 xu' },
   { rating: 2000, color: '#f59e0b', colorSoft: '#fde68a', name: 'Thành Hoàng Kim', rewardDesc: 'Kính phi công vàng + 150 xu' },

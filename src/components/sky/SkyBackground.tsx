@@ -1,5 +1,4 @@
 import { memo } from 'react'
-import CloudLayer from './CloudLayer'
 
 interface Props {
   /** chiều rộng nội dung (px) để rải mây & hạt sáng, mặc định phủ 100% */
@@ -7,7 +6,7 @@ interface Props {
   showSun?: boolean
 }
 
-/** Nền bầu trời: mặt trời, tia nắng, mây trôi, sao lấp lánh, biển mây dưới chân */
+/** Nền bầu trời: mặt trời, tia nắng, hạt sáng và sao lấp lánh (mây do ParallaxBackdrop đảm nhận) */
 function SkyBackground({ width, showSun = true }: Props) {
   const particles = Array.from({ length: 14 }, (_, i) => ({
     left: `${(i * 137) % 100}%`,
@@ -21,14 +20,6 @@ function SkyBackground({ width, showSun = true }: Props) {
     left: `${(i * 83 + 20) % 100}%`,
     top: `${6 + ((i * 37) % 50)}%`,
     delay: (i * 0.9) % 5,
-  }))
-
-  const seaClouds = Array.from({ length: 12 }, (_, i) => ({
-    left: `${(i * 9.2) % 100}%`,
-    bottom: -18 - ((i * 11) % 22),
-    w: 160 + ((i * 47) % 140),
-    h: 44 + ((i * 13) % 26),
-    opacity: 0.55 + ((i * 7) % 4) / 10,
   }))
 
   return (
@@ -51,8 +42,6 @@ function SkyBackground({ width, showSun = true }: Props) {
           />
         </>
       )}
-      <CloudLayer />
-
       {/* hạt sáng lơ lửng */}
       {particles.map((p, i) => (
         <span
@@ -80,21 +69,6 @@ function SkyBackground({ width, showSun = true }: Props) {
         </span>
       ))}
 
-      {/* biển mây dưới chân trời */}
-      {seaClouds.map((c, i) => (
-        <span
-          key={`c-${i}`}
-          className="absolute rounded-full bg-white"
-          style={{
-            left: c.left,
-            bottom: c.bottom,
-            width: c.w,
-            height: c.h,
-            opacity: c.opacity,
-            filter: 'blur(10px)',
-          }}
-        />
-      ))}
     </div>
   )
 }

@@ -52,9 +52,9 @@ export default function ProgressPanel() {
   const rewardSkin = next ? itemById(MILESTONE_ITEM_REWARDS[next]) : undefined
 
   return (
-    <div className="glass-strong relative p-5 pt-7">
+    <div className="game-panel relative p-2 pt-4">
       {/* nhãn nổi trên viền */}
-      <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-white/95 shadow-md text-[11px] font-extrabold tracking-widest text-slate-500 whitespace-nowrap">
+      <div className="absolute -top-6 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-[#2f3b5c] border-2 border-[#4a5a85] shadow-md text-[11px] font-extrabold tracking-widest text-amber-200 whitespace-nowrap">
         ✦ CỘT MỐC HIỆN TẠI ✦
       </div>
 
@@ -62,7 +62,7 @@ export default function ProgressPanel() {
         {/* khiên rating */}
         <div className="flex md:flex-col items-center gap-2 justify-center">
           <MiniShield rating={current.rating} color={current.color} />
-          <div className="text-xs font-extrabold text-slate-500">Rating</div>
+          <div className="text-xs font-extrabold text-[#8a7550]">Rating</div>
         </div>
 
         {/* tiến độ */}
@@ -72,7 +72,7 @@ export default function ProgressPanel() {
           </h3>
           <div className="mt-2.5 flex items-center gap-3">
             <div
-              className="flex-1 h-5 rounded-full bg-slate-200/80 overflow-hidden shadow-inner"
+              className="flex-1 h-5 rounded-full bg-[#e6d9b8] border-2 border-[#c9b78d] overflow-hidden shadow-inner"
               role="progressbar"
               aria-valuenow={milestoneProgress}
               aria-valuemin={0}
@@ -93,7 +93,7 @@ export default function ProgressPanel() {
             </div>
           </div>
 
-          <div className="mt-3 rounded-xl bg-white/80 border border-sky-100 px-3.5 py-2 text-sm font-semibold text-slate-600 inline-block">
+          <div className="mt-3 game-inset px-3.5 py-2 text-sm font-semibold text-slate-600 inline-block">
             {next ? (
               <>Giải thêm <b className="text-sky-600">{remaining} bài</b> để mở khóa cột mốc <b style={{ color: MILESTONES[milestoneIndex + 1].color }}>{next}</b> 🍃</>
             ) : (
@@ -101,9 +101,9 @@ export default function ProgressPanel() {
             )}
           </div>
 
-          <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
+          <div className="mt-3 flex items-center gap-2 text-xs text-[#8a7550]">
             <span className="font-bold whitespace-nowrap">Toàn hành trình</span>
-            <div className="flex-1 h-2 rounded-full bg-slate-200/80 overflow-hidden">
+            <div className="flex-1 h-2 rounded-full bg-[#e6d9b8] overflow-hidden">
               <div className="h-full rounded-full bg-gradient-to-r from-sky-400 via-violet-400 to-amber-400" style={{ width: `${journeyPct}%` }} />
             </div>
             <span className="font-extrabold text-slate-600">{journeyPct}%</span>
@@ -111,23 +111,23 @@ export default function ProgressPanel() {
         </div>
 
         {/* phần thưởng cột mốc */}
-        <div className="md:border-l md:border-white/80 md:pl-5">
-          <div className="text-sm font-extrabold text-slate-600 mb-2.5 text-center md:text-left">Phần thưởng cột mốc</div>
+        <div className="md:border-l-2 md:border-[#d8c9a3] md:pl-5">
+          <div className="text-sm font-extrabold text-[#5c4d33] mb-2.5 text-center md:text-left">Phần thưởng cột mốc</div>
           <div className="grid grid-cols-3 gap-2">
-            <div className="rounded-2xl bg-sky-50/90 border border-sky-100 p-2.5 text-center">
+            <div className="game-inset p-2.5 text-center">
               <div className="text-2xl" aria-hidden="true">💎</div>
               <div className="text-sm font-extrabold text-sky-600">{rewardCoins}</div>
-              <div className="text-[10px] font-bold text-slate-500">Xu</div>
+              <div className="text-[10px] font-bold text-[#8a7550]">Xu</div>
             </div>
-            <div className="rounded-2xl bg-amber-50/90 border border-amber-100 p-2.5 text-center">
+            <div className="game-inset p-2.5 text-center">
               <div className="text-2xl" aria-hidden="true">🏅</div>
               <div className="text-sm font-extrabold text-amber-600">1</div>
-              <div className="text-[10px] font-bold text-slate-500">Huy hiệu</div>
+              <div className="text-[10px] font-bold text-[#8a7550]">Huy hiệu</div>
             </div>
-            <div className="rounded-2xl bg-teal-50/90 border border-teal-100 p-2.5 text-center">
+            <div className="game-inset p-2.5 text-center">
               <div className="text-2xl" aria-hidden="true">{rewardSkin ? rewardSkin.emoji : '🐦'}</div>
               <div className="text-sm font-extrabold text-teal-600">{rewardSkin ? 1 : '—'}</div>
-              <div className="text-[10px] font-bold text-slate-500">Skin</div>
+              <div className="text-[10px] font-bold text-[#8a7550]">Skin</div>
             </div>
           </div>
         </div>

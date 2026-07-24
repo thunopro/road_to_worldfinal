@@ -6,12 +6,14 @@ export const DAILY_QUESTS: QuestDef[] = [
   { id: 'd-ac2', scope: 'daily', title: 'Đà tiến công', desc: 'AC 2 bài trong hôm nay', target: 2, reward: 40, emoji: '⚡' },
   { id: 'd-review', scope: 'daily', title: 'Ôn cố tri tân', desc: 'Hoàn thành ôn lại 1 bài được đánh dấu "làm lại"', target: 1, reward: 30, emoji: '📖' },
   { id: 'd-30min', scope: 'daily', title: 'Bền bỉ 30 phút', desc: 'Tổng thời gian giải hôm nay đạt 30 phút', target: 30, reward: 30, emoji: '⏱️' },
+  { id: 'd-ac5', scope: 'daily', title: 'Cuồng phong bàn phím', desc: 'AC 5 bài trong một ngày — thử thách cao thủ!', target: 5, reward: 100, emoji: '🌪️' },
 ]
 
 export const WEEKLY_QUESTS: QuestDef[] = [
   { id: 'w-ac10', scope: 'weekly', title: 'Thập toàn thập mỹ', desc: 'AC 10 bài trong tuần này', target: 10, reward: 120, emoji: '🔟' },
   { id: 'w-active4', scope: 'weekly', title: 'Không bỏ cuộc', desc: 'Luyện tập ít nhất 4 ngày trong tuần (không nghỉ quá 2 ngày)', target: 4, reward: 130, emoji: '🔥' },
   { id: 'w-virtual', scope: 'weekly', title: 'Virtual Contest', desc: 'AC 3 bài trong cùng một ngày (mô phỏng virtual contest)', target: 3, reward: 150, emoji: '🏁' },
+  { id: 'w-ac20', scope: 'weekly', title: 'Nhị thập toàn năng', desc: 'AC 20 bài trong tuần — phần thưởng khổng lồ!', target: 20, reward: 300, emoji: '💪' },
 ]
 
 interface QuestContext {
@@ -30,12 +32,14 @@ export function questProgress(def: QuestDef, ctx: QuestContext): number {
   switch (def.id) {
     case 'd-ac1':
     case 'd-ac2':
+    case 'd-ac5':
       return todayAC.length
     case 'd-review':
       return ctx.reviewedDates.filter((d) => d === today).length
     case 'd-30min':
       return todayAC.reduce((s, p) => s + (p.solveTimeMinutes ?? 0), 0)
     case 'w-ac10':
+    case 'w-ac20':
       return weekAC.length
     case 'w-active4':
       return new Set(weekAC.map((p) => p.date)).size

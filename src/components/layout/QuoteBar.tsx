@@ -21,10 +21,11 @@ export default function QuoteBar({ className = '' }: Props) {
   const quote = QUOTES[index]
 
   return (
-    <div className={`glass px-5 py-3 text-center ${className}`}>
+    <div className={`game-panel px-4 py-1.5 text-center ${className}`}>
       <div key={index} style={reducedMotion ? undefined : { animation: 'fade-in 0.7s ease-out' }}>
-        <span className="text-sm text-slate-600 italic">“{quote.text}”</span>
-        <span className="text-xs font-extrabold text-amber-600 ml-2 whitespace-nowrap">— {quote.author}</span>
+        <span className="text-base mr-1.5" aria-hidden="true">📜</span>
+        <span className="text-sm text-[#5c4d33] italic font-medium">“{quote.text}”</span>
+        <span className="text-xs font-extrabold text-amber-700 ml-2 whitespace-nowrap">— {quote.author}</span>
       </div>
     </div>
   )

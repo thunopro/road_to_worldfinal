@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { MILESTONES } from '../../data/milestones'
 import { birdJourneyT, inactivityGap, useAppStore } from '../../store/useAppStore'
 import type { BirdVisualState } from '../../types'
+import ParallaxBackdrop from '../sky/ParallaxBackdrop'
 import SkyBackground from '../sky/SkyBackground'
 import BirdCharacter from './BirdCharacter'
 import FlightPath from './FlightPath'
@@ -72,6 +73,7 @@ export default function JourneyMap() {
     >
       <div className="relative" style={{ width: journeyWidth(), height: JOURNEY_HEIGHT }}>
         <SkyBackground width={journeyWidth()} />
+        <ParallaxBackdrop width={journeyWidth()} />
         <FlightPath birdT={displayedT} unlockedIndex={milestoneIndex} />
 
         {/* các tòa tháp milestone */}

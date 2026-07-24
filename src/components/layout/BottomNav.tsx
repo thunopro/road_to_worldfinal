@@ -10,7 +10,7 @@ export default function BottomNav({ page, onNavigate }: Props) {
   const items = NAV_ITEMS.filter((n) => MOBILE_NAV.includes(n.id))
   return (
     <nav
-      className="lg:hidden fixed bottom-0 inset-x-0 z-40 glass-strong rounded-t-2xl rounded-b-none border-b-0 flex justify-around px-2 py-1.5"
+      className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-[#f7eed9]/95 border-t-[3px] border-[#d8c9a3] rounded-t-2xl flex justify-around px-2 py-1.5 shadow-[0_-4px_12px_rgba(60,80,120,0.15)]"
       aria-label="Điều hướng mobile"
     >
       {items.map((item) => (

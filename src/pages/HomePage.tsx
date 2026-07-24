@@ -12,7 +12,10 @@ function SubmitCard() {
   const busy = phase !== 'none'
 
   return (
-    <div className="relative rounded-3xl p-5 flex flex-col gap-3 border border-amber-200/80 shadow-xl shadow-amber-200/40 bg-gradient-to-br from-amber-100/95 via-amber-50/95 to-orange-100/95 overflow-hidden">
+    <div
+      className="relative rounded-2xl p-5 flex flex-col gap-3 bg-gradient-to-br from-amber-100 via-amber-50 to-orange-100 overflow-hidden"
+      style={{ border: '3px solid #d9a92c', borderBottomWidth: 6, boxShadow: '0 6px 14px rgba(180, 120, 30, 0.3)' }}
+    >
       <div className="absolute -top-8 -right-8 w-28 h-28 rounded-full bg-amber-300/30 blur-xl" aria-hidden="true" />
       <div>
         <div className="font-extrabold text-amber-800">AC là thức ăn của chim!</div>
@@ -32,10 +35,9 @@ function SubmitCard() {
       <button
         onClick={() => setSubmitOpen(true)}
         disabled={busy}
-        className="w-full py-3.5 rounded-2xl font-extrabold text-white text-lg flex items-center justify-center gap-2
-          bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 shadow-lg shadow-amber-400/50
-          hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all
-          disabled:opacity-60 disabled:cursor-wait"
+        className="game-btn w-full py-3.5 font-extrabold text-white text-lg flex items-center justify-center gap-2
+          bg-gradient-to-b from-amber-400 to-orange-500 border-2 border-amber-700 shadow-lg shadow-amber-400/50
+          hover:brightness-105 disabled:opacity-60 disabled:cursor-wait"
         style={reducedMotion || busy ? undefined : { animation: 'pulse-soft 1.8s ease-in-out infinite' }}
         aria-label="Nộp bài vừa giải"
       >

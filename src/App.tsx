@@ -9,10 +9,14 @@ import SubmitProblemButton from './components/submit/SubmitProblemButton'
 import SubmitProblemModal from './components/submit/SubmitProblemModal'
 import { useCelebration } from './hooks/useCelebration'
 import { useAppStore, type AddProblemResult } from './store/useAppStore'
+import { useAuthStore } from './store/useAuthStore'
+import LoginScreen from './components/auth/LoginScreen'
 import HomePage from './pages/HomePage'
 import ProblemsPage from './pages/ProblemsPage'
 import CalendarPage from './pages/CalendarPage'
 import QuestsPage from './pages/QuestsPage'
+import GroupsPage from './pages/GroupsPage'
+import ProfilePage from './pages/ProfilePage'
 import AchievementsPage from './pages/AchievementsPage'
 import LeaderboardPage from './pages/LeaderboardPage'
 import CollectionPage from './pages/CollectionPage'
@@ -24,6 +28,8 @@ const PAGES: Record<PageId, () => React.JSX.Element> = {
   problems: ProblemsPage,
   calendar: CalendarPage,
   quests: QuestsPage,
+  groups: GroupsPage,
+  profile: ProfilePage,
   achievements: AchievementsPage,
   leaderboard: LeaderboardPage,
   collection: CollectionPage,
@@ -45,7 +51,14 @@ export default function App() {
   const settings = useAppStore((s) => s.settings)
   const equippedBg = useAppStore((s) => s.collection.equipped.background)
   const checkStreakOnLoad = useAppStore((s) => s.checkStreakOnLoad)
+  const authStatus = useAuthStore((s) => s.status)
+  const initAuth = useAuthStore((s) => s.init)
   const { run, skip } = useCelebration()
+
+  // khởi tạo phiên đăng nhập (Google OAuth / khách)
+  useEffect(() => {
+    initAuth()
+  }, [initAuth])
 
   // điều hướng bằng hash để giữ trang khi tải lại
   useEffect(() => {
@@ -82,6 +95,26 @@ export default function App() {
 
   const Page = PAGES[page]
   const celebrating = phase !== 'none' && phase !== 'milestone'
+
+  // màn hình chờ / đăng nhập
+  if (authStatus === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-5xl mb-3">🐦</div>
+          <div className="font-extrabold text-slate-500">Đang tải hành trình...</div>
+        </div>
+      </div>
+    )
+  }
+  if (authStatus === 'signedOut') {
+    return (
+      <>
+        <LoginScreen />
+        <ToastStack />
+      </>
+    )
+  }
 
   return (
     <div className="flex min-h-screen">

@@ -2,3 +2,10 @@ node_modules
 dist
 *.local
 .DS_Store
+
+# không bao giờ commit khóa/bí mật
+.env
+.env.*
+!.env.example
+.mcp.json
+*.tsbuildinfo

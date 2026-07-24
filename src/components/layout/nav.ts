@@ -3,6 +3,8 @@ export type PageId =
   | 'problems'
   | 'calendar'
   | 'quests'
+  | 'groups'
+  | 'profile'
   | 'achievements'
   | 'leaderboard'
   | 'collection'
@@ -23,11 +25,13 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
   { id: 'home', label: 'Trang chủ', emoji: '🏠' },
   { id: 'problems', label: 'Bài tập', emoji: '📘' },
+  { id: 'groups', label: 'Nhóm', emoji: '🫂' },
   { id: 'calendar', label: 'Lịch luyện tập', emoji: '📅' },
   { id: 'quests', label: 'Nhiệm vụ', emoji: '🎯' },
   { id: 'stats', label: 'Thống kê', emoji: '📈' },
+  { id: 'profile', label: 'Hồ sơ', emoji: '👤' },
   { id: 'settings', label: 'Cài đặt', emoji: '⚙️' },
 ]
 
 /** các mục hiển thị trên bottom navigation mobile */
-export const MOBILE_NAV: PageId[] = ['home', 'problems', 'quests', 'stats', 'settings']
+export const MOBILE_NAV: PageId[] = ['home', 'problems', 'groups', 'quests', 'profile']

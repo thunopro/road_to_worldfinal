@@ -42,9 +42,9 @@ export default function HeaderStats() {
     <header className="flex flex-col xl:flex-row xl:items-center gap-4 mb-5">
       <div className="flex-1 min-w-0">
         <h1 className="text-2xl md:text-4xl font-extrabold tracking-tight text-white drop-shadow-[0_2px_6px_rgba(30,80,140,0.45)]">
-          Hành ổn trí viễn{' '}
+          roadtoworld
           <span className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent drop-shadow-none">
-            [CODE]
+            final
           </span>
         </h1>
         <p className="text-sm text-sky-900/70 font-medium mt-1">Mỗi AC là một hạt năng lượng, giúp chim bay xa hơn ✨</p>

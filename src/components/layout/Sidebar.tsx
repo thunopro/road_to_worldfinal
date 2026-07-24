@@ -1,6 +1,7 @@
 import { MILESTONES } from '../../data/milestones'
 import { useAppStore } from '../../store/useAppStore'
 import BirdCharacter from '../journey/BirdCharacter'
+import ribbon from '../../assets/ui/ribbon.png'
 import { NAV_ITEMS, type PageId } from './nav'
 
 const RANK_TITLES = [
@@ -24,23 +25,32 @@ export default function Sidebar({ page, onNavigate }: Props) {
 
   return (
     <aside className="hidden lg:flex flex-col w-64 shrink-0 h-screen sticky top-0 p-4 gap-2">
-      <div className="glass-strong flex-1 flex flex-col p-4 overflow-y-auto">
-        <div className="text-lg font-extrabold tracking-tight bg-gradient-to-r from-sky-600 to-amber-500 bg-clip-text text-transparent">
-          Hành ổn trí viễn
+      <div className="game-panel flex-1 flex flex-col overflow-y-auto">
+        {/* banner ruy băng tựa game */}
+        <div className="relative -mt-2 mb-3 select-none">
+          <img src={ribbon} alt="" className="w-full" style={{ imageRendering: 'pixelated' }} draggable={false} />
+          <div className="absolute inset-0 flex flex-col items-center justify-center pb-3">
+            <span className="text-[13px] font-extrabold text-amber-50 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)] leading-tight">
+              roadtoworld
+            </span>
+            <span className="text-[11px] font-extrabold text-amber-300 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
+              FINAL
+            </span>
+          </div>
         </div>
-        <div className="text-[11px] font-bold text-amber-500 mb-4">[CODE]</div>
 
-        <nav className="flex flex-col gap-1" aria-label="Điều hướng chính">
+        <nav className="flex flex-col gap-1.5 px-1" aria-label="Điều hướng chính">
           {NAV_ITEMS.map((item) => (
             <button
               key={item.id}
               onClick={() => onNavigate(item.id)}
               aria-current={page === item.id ? 'page' : undefined}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-left
+              className={`game-btn flex items-center gap-3 px-3 py-2.5 text-sm font-extrabold text-left
                 ${page === item.id
-                  ? 'bg-gradient-to-r from-sky-500 to-sky-400 text-white shadow-md shadow-sky-300/50'
-                  : 'text-slate-600 hover:bg-sky-100/70 hover:translate-x-1'
+                  ? 'bg-gradient-to-b from-sky-400 to-sky-500 border-sky-700 text-white shadow-md'
+                  : 'bg-[#fdf6e3] border-[#d8c9a3] text-[#5c4d33] hover:bg-amber-50 hover:translate-x-0.5'
                 }`}
+              style={{ borderWidth: '2px', borderBottomWidth: '4px', borderStyle: 'solid' }}
             >
               <span aria-hidden="true">{item.emoji}</span>
               {item.label}
@@ -49,17 +59,17 @@ export default function Sidebar({ page, onNavigate }: Props) {
         </nav>
 
         {/* hồ sơ người dùng */}
-        <div className="mt-auto pt-4">
-          <div className="rounded-2xl bg-gradient-to-br from-sky-100 to-amber-50 border border-white p-3 flex items-center gap-3">
+        <div className="mt-auto pt-4 px-1 pb-1">
+          <div className="game-inset p-3 flex items-center gap-3">
             <div className="w-14 h-14 shrink-0 -ml-1">
               <BirdCharacter state="idle" size={56} />
             </div>
             <div className="min-w-0">
-              <div className="font-bold text-sm truncate">{user.name}</div>
-              <div className="text-[11px] text-sky-600 font-semibold truncate">
+              <div className="font-extrabold text-sm truncate text-[#3d3222]">{user.name}</div>
+              <div className="text-[11px] text-sky-700 font-bold truncate">
                 {RANK_TITLES[milestoneIndex]} · {MILESTONES[milestoneIndex].rating}
               </div>
-              <div className="text-[11px] text-slate-500">🪙 {user.coins} xu</div>
+              <div className="text-[11px] font-bold text-amber-600">🪙 {user.coins} xu</div>
             </div>
           </div>
         </div>
