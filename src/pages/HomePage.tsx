@@ -18,8 +18,8 @@ function SubmitCard() {
     >
       <div className="absolute -top-8 -right-8 w-28 h-28 rounded-full bg-amber-300/30 blur-xl" aria-hidden="true" />
       <div>
-        <div className="font-extrabold text-amber-800">AC là thức ăn của chim!</div>
-        <div className="text-xs font-semibold text-amber-700/80 mt-0.5">Nộp bài để nuôi chim và tiến xa hơn nhé!</div>
+        <div className="font-extrabold text-amber-800">AC là sức mạnh của hiệp sĩ!</div>
+        <div className="text-xs font-semibold text-amber-700/80 mt-0.5">Nộp bài để tăng lực chiến và tiến xa hơn!</div>
       </div>
       <div className="flex items-center gap-3 text-2xl" aria-hidden="true">
         {['🌰', '🌱', '⭐'].map((seed, i) => (

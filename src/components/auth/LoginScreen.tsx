@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import BirdCharacter from '../journey/BirdCharacter'
+import KnightCharacter from '../journey/KnightCharacter'
 import SkyBackground from '../sky/SkyBackground'
 import { useAppStore } from '../../store/useAppStore'
 import { useAuthStore } from '../../store/useAuthStore'
@@ -30,14 +30,14 @@ export default function LoginScreen() {
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
       <SkyBackground />
       <div className="game-panel relative w-full max-w-md p-6 text-center">
-        <div className="flex justify-center -mt-14 mb-1">
-          <BirdCharacter state="celebrating" size={120} />
+        <div className="flex justify-center -mt-16 mb-1">
+          <KnightCharacter state="idle" size={130} />
         </div>
         <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-sky-600 to-amber-500 bg-clip-text text-transparent">
           roadtoworldfinal
         </h1>
         <p className="text-sm text-[#5c4d33] font-medium mt-1 mb-6">
-          Mỗi AC là một hạt năng lượng, giúp chim bay xa hơn ✨
+          Hành trình của hiệp sĩ: cày từ 0 lên đỉnh vinh quang ⚔️
         </p>
 
         <button

@@ -39,6 +39,9 @@ interface ProfileRow {
   settings: Record<string, unknown>
   login_reward_day: number
   last_reward_date: string | null
+  story_progress: number
+  inventory: string[]
+  equipment: Record<string, string>
 }
 
 function stateToProfilePatch() {
@@ -57,6 +60,9 @@ function stateToProfilePatch() {
     reviewed_dates: s.reviewedDates,
     collection: s.collection,
     settings: s.settings,
+    story_progress: s.storyProgress,
+    inventory: s.inventory,
+    equipment: s.equipment,
     updated_at: new Date().toISOString(),
   }
 }
@@ -240,6 +246,9 @@ export async function hydrateFromRemote(session: Session): Promise<RemoteProfile
           ? (row.collection as { owned: string[]; equipped: Record<string, string> })
           : s.collection,
       settings: { ...s.settings, ...(row.settings as object) },
+      storyProgress: row.story_progress ?? 0,
+      inventory: row.inventory ?? [],
+      equipment: row.equipment ?? {},
       problems,
     })
     useAppStore.getState().checkStreakOnLoad()

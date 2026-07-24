@@ -28,6 +28,8 @@ export const NAV_ITEMS: NavItem[] = [
   { id: 'groups', label: 'Nhóm', emoji: '🫂' },
   { id: 'calendar', label: 'Lịch luyện tập', emoji: '📅' },
   { id: 'quests', label: 'Nhiệm vụ', emoji: '🎯' },
+  { id: 'leaderboard', label: 'Bảng xếp hạng', emoji: '📊' },
+  { id: 'collection', label: 'Cửa hàng', emoji: '🛒' },
   { id: 'stats', label: 'Thống kê', emoji: '📈' },
   { id: 'profile', label: 'Hồ sơ', emoji: '👤' },
   { id: 'settings', label: 'Cài đặt', emoji: '⚙️' },

@@ -213,6 +213,11 @@ body[data-sky="night"] .glass-strong {
   to { transform: translateX(var(--drift)); }
 }
 
+/* animation spritesheet (hiệp sĩ) — chạy từng frame bằng steps() */
+@keyframes sprite-play {
+  to { background-position-x: var(--sheet-w); }
+}
+
 @keyframes fade-in {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }

@@ -1,14 +1,37 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { MILESTONES } from '../data/milestones'
+import { supabase } from '../lib/supabase'
 import { useAppStore } from '../store/useAppStore'
+import { useAuthStore } from '../store/useAuthStore'
 import { formatDateVi, weekStartKey } from '../utils/dates'
 
 const MEDALS = ['🥇', '🥈', '🥉', '4.', '5.']
 
-/** Bảng xếp hạng cá nhân: tự đua với chính mình theo ngày và theo tuần */
+interface BoardRow {
+  id: string
+  name: string
+  avatar_url: string | null
+  total_ac: number
+  milestone_index: number
+  streak_current: number
+  score: number
+}
+
+/** BXH toàn server (online) + kỷ lục cá nhân */
 export default function LeaderboardPage() {
   const problems = useAppStore((s) => s.problems)
   const streak = useAppStore((s) => s.streak)
   const totalAC = useAppStore((s) => s.totalAC)
+  const session = useAuthStore((s) => s.session)
+  const [board, setBoard] = useState<BoardRow[] | null>(null)
+  const [boardError, setBoardError] = useState<string | null>(null)
+
+  useEffect(() => {
+    void supabase.rpc('get_leaderboard', { p_limit: 50 }).then(({ data, error }) => {
+      if (error) setBoardError(error.message)
+      else setBoard((data ?? []) as BoardRow[])
+    })
+  }, [])
 
   const { topDays, topWeeks, maxDay } = useMemo(() => {
     const byDay = new Map<string, number>()
@@ -37,8 +60,55 @@ export default function LeaderboardPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-extrabold mb-1">📊 Bảng xếp hạng cá nhân</h1>
-      <p className="text-sm text-slate-500 mb-4">Đối thủ lớn nhất là chính bạn của ngày hôm qua.</p>
+      <h1 className="text-2xl font-extrabold mb-1">📊 Bảng xếp hạng</h1>
+      <p className="text-sm text-slate-500 mb-4">
+        Xếp hạng toàn server theo điểm tổ hợp: <b className="text-violet-600">Rank×1000</b> + <b className="text-sky-600">Số bài AC×10</b> + <b className="text-orange-600">Streak×25</b>
+      </p>
+
+      {/* ===== BXH online ===== */}
+      <div className="game-panel p-4 mb-6">
+        <h2 className="font-extrabold mb-3 text-[#3d3222]">🌍 Toàn server</h2>
+        {boardError ? (
+          <p className="text-sm text-rose-500 font-semibold">Không tải được BXH: {boardError}</p>
+        ) : board === null ? (
+          <p className="text-sm text-[#8a7550]">Đang tải bảng xếp hạng...</p>
+        ) : board.length === 0 ? (
+          <p className="text-sm text-[#8a7550]">Chưa có ai trên bảng — đăng nhập và AC bài đầu tiên để ghi danh!</p>
+        ) : (
+          <div className="space-y-1.5">
+            {board.map((r, i) => {
+              const isMe = session?.user.id === r.id
+              return (
+                <div
+                  key={r.id}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-xl ${isMe ? 'bg-amber-100 border-2 border-amber-400' : i % 2 === 0 ? 'bg-white/60' : ''}`}
+                >
+                  <span className="w-8 text-center font-extrabold">{MEDALS[i] ?? `${i + 1}.`}</span>
+                  {r.avatar_url ? (
+                    <img src={r.avatar_url} alt="" className="w-8 h-8 rounded-full border-2 border-amber-200" referrerPolicy="no-referrer" />
+                  ) : (
+                    <span className="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center text-sm">🛡️</span>
+                  )}
+                  <span className="flex-1 min-w-0 truncate font-extrabold text-sm text-[#3d3222]">
+                    {r.name}{isMe && ' (bạn)'}
+                  </span>
+                  <span
+                    className="hidden sm:inline px-2 py-0.5 rounded-full text-[10px] font-extrabold text-white"
+                    style={{ background: MILESTONES[Math.min(r.milestone_index, MILESTONES.length - 1)].color }}
+                  >
+                    {MILESTONES[Math.min(r.milestone_index, MILESTONES.length - 1)].rating}
+                  </span>
+                  <span className="hidden md:inline text-xs font-bold text-[#8a7550] w-16 text-right">⚡ {r.total_ac}</span>
+                  <span className="hidden md:inline text-xs font-bold text-[#8a7550] w-14 text-right">🔥 {r.streak_current}</span>
+                  <span className="w-20 text-right font-extrabold text-violet-600">{r.score.toLocaleString()} đ</span>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+
+      <h2 className="font-extrabold text-lg mb-3">🏅 Kỷ lục cá nhân</h2>
 
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-5">
         {records.map((r) => (

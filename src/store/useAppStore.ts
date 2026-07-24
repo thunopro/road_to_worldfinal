@@ -3,8 +3,8 @@ import { persist } from 'zustand/middleware'
 import type { CelebrationPhase, Problem, ToastItem } from '../types'
 import { MILESTONES, FINAL_UNLOCK_COINS, MILESTONE_UNLOCK_COINS } from '../data/milestones'
 import { DEFAULT_EQUIPPED, DEFAULT_OWNED, itemById } from '../data/shop'
-import { sampleProblems } from '../data/sample'
-import { addDays, daysBetween, localDateKey } from '../utils/dates'
+import { gearById } from '../data/equipment'
+import { daysBetween, localDateKey } from '../utils/dates'
 
 export interface StreakState {
   current: number
@@ -43,6 +43,12 @@ interface AppState {
   reviewedDates: string[]
   collection: { owned: string[]; equipped: Record<string, string> }
   settings: SettingsState
+  /** chương hiện tại của kịch bản chính (đã hoàn thành các chương < giá trị này) */
+  storyProgress: number
+  /** kho đồ: id trang bị + học liệu đã sở hữu */
+  inventory: string[]
+  /** trang bị đang mặc theo slot */
+  equipment: Record<string, string>
 
   // ---- transient (không persist) ----
   phase: CelebrationPhase
@@ -60,6 +66,12 @@ interface AppState {
   equipItem: (itemId: string) => void
   setSettings: (patch: Partial<SettingsState>) => void
   setUserName: (name: string) => void
+  /** hoàn thành chương kịch bản: nhận xu + có thể rơi đồ */
+  advanceStory: (rewardCoins: number, droppedGearId: string | null) => void
+  /** mặc trang bị từ kho đồ */
+  equipGear: (gearId: string) => void
+  /** mua học liệu bằng xu, trả về false nếu không đủ */
+  buyMaterial: (materialId: string, price: number) => boolean
   setPhase: (phase: CelebrationPhase) => void
   setSubmitOpen: (open: boolean) => void
   clearPendingUnlock: () => void
@@ -80,19 +92,25 @@ export const MILESTONE_ITEM_REWARDS: Record<number, string> = {
   2400: 'hat-crown',
 }
 
+/**
+ * Trải nghiệm như game offline: ai cũng bắt đầu từ con số 0
+ * và tự cày lên qua nhiệm vụ, kịch bản, rank.
+ */
 function seedState() {
-  const yesterday = addDays(localDateKey(), -1)
   return {
-    user: { name: 'SkyCoder', coins: 320, badges: ['badge-starter', 'badge-first-flight', 'badge-week-fire'] },
-    problems: sampleProblems(),
+    user: { name: 'Tân Kiếm Sĩ', coins: 0, badges: [] as string[] },
+    problems: [],
     milestoneIndex: 0,
-    milestoneProgress: 45,
-    totalAC: 45,
-    streak: { current: 7, longest: 21, lastActiveDate: yesterday },
+    milestoneProgress: 0,
+    totalAC: 0,
+    streak: { current: 0, longest: 0, lastActiveDate: null as string | null },
     questClaims: {},
     reviewedDates: [],
     collection: { owned: [...DEFAULT_OWNED], equipped: { ...DEFAULT_EQUIPPED } },
     settings: { soundOn: true, reducedMotion: false, problemsPerMilestone: 100 },
+    storyProgress: 0,
+    inventory: [] as string[],
+    equipment: {} as Record<string, string>,
   }
 }
 
@@ -227,7 +245,34 @@ export const useAppStore = create<AppState>()(
       },
 
       setSettings: (patch) => set((s) => ({ settings: { ...s.settings, ...patch } })),
-      setUserName: (name) => set((s) => ({ user: { ...s.user, name: name.trim() || 'SkyCoder' } })),
+      setUserName: (name) => set((s) => ({ user: { ...s.user, name: name.trim() || 'Tân Kiếm Sĩ' } })),
+
+      advanceStory: (rewardCoins, droppedGearId) =>
+        set((s) => ({
+          storyProgress: s.storyProgress + 1,
+          user: { ...s.user, coins: s.user.coins + rewardCoins },
+          inventory:
+            droppedGearId && !s.inventory.includes(droppedGearId)
+              ? [...s.inventory, droppedGearId]
+              : s.inventory,
+        })),
+
+      equipGear: (gearId) => {
+        const s = get()
+        const gear = gearById(gearId)
+        if (!gear || !s.inventory.includes(gearId)) return
+        set({ equipment: { ...s.equipment, [gear.slot]: gearId } })
+      },
+
+      buyMaterial: (materialId, price) => {
+        const s = get()
+        if (s.inventory.includes(materialId) || s.user.coins < price) return false
+        set({
+          user: { ...s.user, coins: s.user.coins - price },
+          inventory: [...s.inventory, materialId],
+        })
+        return true
+      },
       setPhase: (phase) => set({ phase }),
       setSubmitOpen: (submitOpen) => set({ submitOpen }),
       clearPendingUnlock: () => set({ pendingUnlock: null }),
@@ -269,6 +314,9 @@ export const useAppStore = create<AppState>()(
         reviewedDates: s.reviewedDates,
         collection: s.collection,
         settings: s.settings,
+        storyProgress: s.storyProgress,
+        inventory: s.inventory,
+        equipment: s.equipment,
       }),
     },
   ),

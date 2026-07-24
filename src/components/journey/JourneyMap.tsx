@@ -5,7 +5,7 @@ import { birdJourneyT, inactivityGap, useAppStore } from '../../store/useAppStor
 import type { BirdVisualState } from '../../types'
 import ParallaxBackdrop from '../sky/ParallaxBackdrop'
 import SkyBackground from '../sky/SkyBackground'
-import BirdCharacter from './BirdCharacter'
+import KnightCharacter from './KnightCharacter'
 import FlightPath from './FlightPath'
 import MilestoneTower from './MilestoneTower'
 import { ANCHOR_Y, anchorX, journeyWidth, JOURNEY_HEIGHT, pointAt } from './geometry'
@@ -122,9 +122,9 @@ export default function JourneyMap() {
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ delay: 0.6 }}
             >
-              {birdState === 'idle' && 'AC thêm bài nữa để bay đến cột mốc tiếp theo nhé! ❤️'}
-              {birdState === 'worried' && 'Hôm nay mình chưa được cho ăn... Đừng để mất chuỗi nhé! 🔥'}
-              {birdState === 'tired' && 'Zzz... lâu rồi không gặp bạn. Quay lại bầu trời thôi! 😴'}
+              {birdState === 'idle' && 'AC thêm bài để tiến về cột mốc tiếp theo nhé! ⚔️'}
+              {birdState === 'worried' && 'Hôm nay ta chưa luyện kiếm... Đừng để mất chuỗi nhé! 🔥'}
+              {birdState === 'tired' && 'Zzz... lâu rồi không gặp chủ tướng. Xuất trận thôi! 😴'}
               <span
                 className="absolute -bottom-1.5 left-4 w-3 h-3 rotate-45 bg-white/80 border-b border-r border-white/80"
                 aria-hidden="true"
@@ -133,18 +133,18 @@ export default function JourneyMap() {
           )}
         </AnimatePresence>
 
-        {/* chú chim tại vị trí tiến độ hiện tại */}
+        {/* hiệp sĩ tại vị trí tiến độ hiện tại */}
         <motion.div
           className="absolute z-10"
           initial={false}
-          animate={{ left: birdPos.x - 60, top: birdPos.y - 100 }}
+          animate={{ left: birdPos.x - 70, top: birdPos.y - 108 }}
           transition={
             reducedMotion
               ? { duration: 0 }
               : { type: 'spring', stiffness: 45, damping: 16 }
           }
         >
-          <BirdCharacter state={birdState} size={120} />
+          <KnightCharacter state={birdState} size={140} />
         </motion.div>
 
         {/* hạt năng lượng bay tới chim */}

@@ -47,7 +47,7 @@ export default function HeaderStats() {
             final
           </span>
         </h1>
-        <p className="text-sm text-sky-900/70 font-medium mt-1">Mỗi AC là một hạt năng lượng, giúp chim bay xa hơn ✨</p>
+        <p className="text-sm text-sky-900/70 font-medium mt-1">Mỗi bài AC đưa hiệp sĩ tiến gần hơn tới trận chung kết thế giới ⚔️</p>
       </div>
 
       <div className="flex items-stretch gap-2 flex-wrap">
