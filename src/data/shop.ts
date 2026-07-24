@@ -28,8 +28,6 @@ export const SHOP_ITEMS: ShopItem[] = [
   { id: 'bg-day', name: 'Bầu Trời Ban Ngày', slot: 'background', price: 0, desc: 'Trời xanh mây trắng nắng vàng.', color: '#7dd3fc', emoji: '☀️' },
   { id: 'bg-sunset', name: 'Hoàng Hôn Cam Đào', slot: 'background', price: 280, desc: 'Luyện đề lúc chiều tà.', color: '#fb923c', emoji: '🌇' },
   { id: 'bg-night', name: 'Đêm Ngân Hà', slot: 'background', price: 340, desc: 'Code xuyên đêm cùng dải ngân hà.', color: '#4c1d95', emoji: '🌌' },
-  // vật phẩm tiêu hao
-  { id: 'streak-freeze', name: 'Streak Freeze ❄️', slot: 'consumable', price: 100, desc: 'Bảo vệ chuỗi ngày nếu lỡ nghỉ 1 ngày. Tự động kích hoạt.', color: '#67e8f9', emoji: '🧊' },
 ]
 
 export const DEFAULT_OWNED = ['scarf-red', 'goggles-classic', 'wing-sky', 'trail-none', 'bg-day']

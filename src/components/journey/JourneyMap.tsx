@@ -7,7 +7,7 @@ import SkyBackground from '../sky/SkyBackground'
 import BirdCharacter from './BirdCharacter'
 import FlightPath from './FlightPath'
 import MilestoneTower from './MilestoneTower'
-import { anchorX, journeyWidth, JOURNEY_HEIGHT, pointAt } from './geometry'
+import { ANCHOR_Y, anchorX, journeyWidth, JOURNEY_HEIGHT, pointAt } from './geometry'
 import { itemById } from '../../data/shop'
 
 /** Khu vực hành trình: bầu trời + tháp milestone + đường bay + chú chim */
@@ -65,7 +65,7 @@ export default function JourneyMap() {
   return (
     <div
       ref={scrollRef}
-      className="journey-scroll relative overflow-x-auto overflow-y-hidden rounded-3xl border border-white/70 bg-gradient-to-b from-sky-200/70 via-sky-100/60 to-amber-50/70 shadow-inner"
+      className="journey-scroll relative overflow-x-auto overflow-y-hidden rounded-3xl border border-white/70 bg-gradient-to-b from-sky-400/50 via-sky-200/50 to-sky-50/80 shadow-inner"
       style={{ height: JOURNEY_HEIGHT }}
       aria-label="Bản đồ hành trình từ rating 1200 đến 2400. Kéo ngang để xem toàn bộ."
       tabIndex={0}
@@ -79,7 +79,7 @@ export default function JourneyMap() {
           <div
             key={m.rating}
             className="absolute"
-            style={{ left: anchorX(i) - 95, top: JOURNEY_HEIGHT - 268 }}
+            style={{ left: anchorX(i) - 100, top: ANCHOR_Y[i] - 76 }}
           >
             <MilestoneTower
               milestone={m}
@@ -94,7 +94,7 @@ export default function JourneyMap() {
 
         {/* trail ánh sáng sau đuôi chim */}
         {showTrail && !reducedMotion && (
-          <motion.div
+          <div
             className="absolute rounded-full"
             style={{
               left: birdPos.x - 90,
@@ -103,11 +103,33 @@ export default function JourneyMap() {
               height: 12,
               background: `linear-gradient(90deg, transparent, ${trailColor})`,
               filter: 'blur(3px)',
+              animation: 'glow-pulse 0.6s ease-in-out infinite',
             }}
-            animate={{ opacity: [0.2, 0.9, 0.2] }}
-            transition={{ duration: 0.6, repeat: Infinity }}
           />
         )}
+
+        {/* bong bóng thoại của chim */}
+        <AnimatePresence>
+          {phase === 'none' && (birdState === 'idle' || birdState === 'worried' || birdState === 'tired') && (
+            <motion.div
+              key={`bubble-${birdState}`}
+              className="absolute z-20 glass-strong px-3.5 py-2.5 text-xs font-semibold text-slate-600 max-w-[200px]"
+              style={{ left: birdPos.x + 34, top: birdPos.y - 168 }}
+              initial={{ opacity: 0, y: 8, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ delay: 0.6 }}
+            >
+              {birdState === 'idle' && 'AC thêm bài nữa để bay đến cột mốc tiếp theo nhé! ❤️'}
+              {birdState === 'worried' && 'Hôm nay mình chưa được cho ăn... Đừng để mất chuỗi nhé! 🔥'}
+              {birdState === 'tired' && 'Zzz... lâu rồi không gặp bạn. Quay lại bầu trời thôi! 😴'}
+              <span
+                className="absolute -bottom-1.5 left-4 w-3 h-3 rotate-45 bg-white/80 border-b border-r border-white/80"
+                aria-hidden="true"
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* chú chim tại vị trí tiến độ hiện tại */}
         <motion.div

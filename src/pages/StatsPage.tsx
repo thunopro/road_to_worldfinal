@@ -44,25 +44,6 @@ export default function StatsPage() {
     return [...map.entries()].sort((a, b) => a[0] - b[0])
   }, [ac])
 
-  // phân bố tag + độ mạnh yếu
-  const tagStats = useMemo(() => {
-    const count = new Map<string, number>()
-    const hard = new Map<string, number>()
-    for (const p of ac) {
-      for (const t of p.tags) {
-        count.set(t, (count.get(t) ?? 0) + 1)
-        hard.set(t, (hard.get(t) ?? 0) + (p.difficultyFeel ?? 2))
-      }
-    }
-    const rows = [...count.entries()]
-      .map(([tag, c]) => ({ tag, count: c, avgHard: (hard.get(tag) ?? 0) / c }))
-      .sort((a, b) => b.count - a.count)
-    return rows
-  }, [ac])
-
-  const strongTags = tagStats.slice(0, 2).map((t) => t.tag)
-  const weakTags = [...tagStats].sort((a, b) => b.avgHard - a.avgHard || a.count - b.count).slice(0, 2).map((t) => t.tag)
-
   const avgTime = ac.length
     ? Math.round(ac.reduce((s, p) => s + (p.solveTimeMinutes ?? 0), 0) / ac.filter((p) => p.solveTimeMinutes).length || 0)
     : 0
@@ -70,7 +51,12 @@ export default function StatsPage() {
   const maxDay = Math.max(1, ...byDay.map((d) => d.count))
   const maxWeek = Math.max(1, ...byWeek.map((w) => w.count))
   const maxRating = Math.max(1, ...byRating.map(([, c]) => c))
-  const maxTag = Math.max(1, ...tagStats.map((t) => t.count))
+
+  // so sánh tuần này với tuần trước để đưa ra nhận xét
+  const thisWeekCount = byWeek[byWeek.length - 1]?.count ?? 0
+  const lastWeekCount = byWeek[byWeek.length - 2]?.count ?? 0
+  const totalMinutes = ac.reduce((s, p) => s + (p.solveTimeMinutes ?? 0), 0)
+  const activeDayCount = new Set(ac.map((p) => p.date)).size
 
   return (
     <div>
@@ -81,11 +67,13 @@ export default function StatsPage() {
       <div className="glass p-4 mb-4 border-l-4 border-l-teal-400">
         <div className="font-extrabold text-sm mb-1">🤖 Nhận xét tự động</div>
         <p className="text-sm text-slate-600">
-          {ac.length === 0
-            ? 'Chưa có dữ liệu — hãy AC bài đầu tiên để nhận phân tích nhé!'
-            : strongTags.length > 0 && weakTags.length > 0
-              ? <>Bạn đang tiến bộ tốt ở <b className="text-teal-600">{strongTags.join(', ')}</b> nhưng cần luyện thêm <b className="text-amber-600">{weakTags.join(', ')}</b>. Thời gian giải trung bình khoảng {avgTime} phút/bài — hãy thử thêm bài khó hơn để bứt phá!</>
-              : 'Hãy giải thêm bài với nhiều tag khác nhau để có phân tích chi tiết hơn.'}
+          {ac.length === 0 ? (
+            'Chưa có dữ liệu — hãy AC bài đầu tiên để nhận phân tích nhé!'
+          ) : thisWeekCount >= lastWeekCount ? (
+            <>Tuần này bạn đã AC <b className="text-teal-600">{thisWeekCount} bài</b>{lastWeekCount > 0 && <> (tuần trước {lastWeekCount})</>} — đà tiến rất tốt! Thời gian giải trung bình khoảng {avgTime || '—'} phút/bài. Hãy giữ nhịp độ đều đặn để chim bay xa hơn nữa.</>
+          ) : (
+            <>Tuần này bạn mới AC <b className="text-amber-600">{thisWeekCount} bài</b>, ít hơn tuần trước ({lastWeekCount} bài). Đừng nản — chỉ cần mỗi ngày 1 bài là lấy lại phong độ ngay!</>
+          )}
         </p>
       </div>
 
@@ -144,26 +132,6 @@ export default function StatsPage() {
           )}
         </div>
 
-        {/* phân bố tag */}
-        <div className="glass p-5">
-          <h2 className="font-extrabold text-sm mb-3">🏷️ Phân bố theo tag (top 8)</h2>
-          {tagStats.length === 0 ? (
-            <p className="text-sm text-slate-400">Chưa có dữ liệu.</p>
-          ) : (
-            <div className="space-y-2">
-              {tagStats.slice(0, 8).map((t) => (
-                <div key={t.tag} className="flex items-center gap-2">
-                  <span className="w-28 truncate text-xs font-bold text-slate-600">{t.tag}</span>
-                  <div className="flex-1 h-3.5 rounded-full bg-slate-200/70 overflow-hidden">
-                    <div className="h-full rounded-full bg-gradient-to-r from-teal-400 to-sky-400" style={{ width: `${(t.count / maxTag) * 100}%` }} />
-                  </div>
-                  <span className="w-8 text-right text-xs font-bold text-slate-500">{t.count}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
         {/* tiến độ milestone */}
         <div className="glass p-5">
           <h2 className="font-extrabold text-sm mb-3">🏰 Tỷ lệ hoàn thành milestone</h2>
@@ -196,12 +164,12 @@ export default function StatsPage() {
               <div className="text-[11px] font-bold text-slate-500">bài cần làm lại</div>
             </div>
             <div className="rounded-xl bg-teal-50/80 p-3 text-center">
-              <div className="text-2xl font-extrabold text-teal-600">{tagStats.length}</div>
-              <div className="text-[11px] font-bold text-slate-500">tag đã luyện</div>
+              <div className="text-2xl font-extrabold text-teal-600">{activeDayCount}</div>
+              <div className="text-[11px] font-bold text-slate-500">ngày có luyện tập</div>
             </div>
             <div className="rounded-xl bg-violet-50/80 p-3 text-center">
-              <div className="text-2xl font-extrabold text-violet-600">{ac.length}</div>
-              <div className="text-[11px] font-bold text-slate-500">bài AC đã ghi lại</div>
+              <div className="text-2xl font-extrabold text-violet-600">{Math.round(totalMinutes / 60 * 10) / 10}h</div>
+              <div className="text-[11px] font-bold text-slate-500">tổng giờ luyện tập</div>
             </div>
           </div>
         </div>

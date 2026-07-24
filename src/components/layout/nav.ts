@@ -15,14 +15,16 @@ export interface NavItem {
   emoji: string
 }
 
+/**
+ * Chỉ giữ các tính năng cốt lõi trên thanh điều hướng.
+ * Các trang Thành tích / BXH cá nhân / Bộ sưu tập vẫn tồn tại trong code,
+ * sẽ bật lại khi phát triển thêm (thêm entry vào đây là xong).
+ */
 export const NAV_ITEMS: NavItem[] = [
   { id: 'home', label: 'Trang chủ', emoji: '🏠' },
   { id: 'problems', label: 'Bài tập', emoji: '📘' },
   { id: 'calendar', label: 'Lịch luyện tập', emoji: '📅' },
   { id: 'quests', label: 'Nhiệm vụ', emoji: '🎯' },
-  { id: 'achievements', label: 'Thành tích', emoji: '🏅' },
-  { id: 'leaderboard', label: 'BXH cá nhân', emoji: '📊' },
-  { id: 'collection', label: 'Bộ sưu tập', emoji: '🎁' },
   { id: 'stats', label: 'Thống kê', emoji: '📈' },
   { id: 'settings', label: 'Cài đặt', emoji: '⚙️' },
 ]

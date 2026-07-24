@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import SubmitProblemModal from '../components/submit/SubmitProblemModal'
 import { problemRatingColor } from '../data/milestones'
-import { ALL_TAGS } from '../data/sample'
 import { useAppStore } from '../store/useAppStore'
 import type { Problem } from '../types'
 import { formatDateVi } from '../utils/dates'
@@ -17,7 +16,6 @@ export default function ProblemsPage() {
 
   const [search, setSearch] = useState('')
   const [ratingFilter, setRatingFilter] = useState<number | 0>(0)
-  const [tagFilter, setTagFilter] = useState('')
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
   const [sort, setSort] = useState<SortKey>('date-desc')
@@ -26,9 +24,8 @@ export default function ProblemsPage() {
 
   const filtered = useMemo(() => {
     let list = problems.filter((p) => {
-      if (search && !p.name.toLowerCase().includes(search.toLowerCase()) && !p.tags.some((t) => t.includes(search.toLowerCase()))) return false
+      if (search && !p.name.toLowerCase().includes(search.toLowerCase())) return false
       if (ratingFilter && p.rating !== ratingFilter) return false
-      if (tagFilter && !p.tags.includes(tagFilter)) return false
       if (dateFrom && p.date < dateFrom) return false
       if (dateTo && p.date > dateTo) return false
       return true
@@ -42,7 +39,7 @@ export default function ProblemsPage() {
       }
     })
     return list
-  }, [problems, search, ratingFilter, tagFilter, dateFrom, dateTo, sort])
+  }, [problems, search, ratingFilter, dateFrom, dateTo, sort])
 
   const ratings = useMemo(() => [...new Set(problems.map((p) => p.rating))].sort((a, b) => a - b), [problems])
   const inputCls = 'rounded-xl border border-sky-200 bg-white/80 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400'
@@ -53,15 +50,11 @@ export default function ProblemsPage() {
       <p className="text-sm text-slate-500 mb-4">Toàn bộ lịch sử luyện tập của bạn — {problems.length} bài đã ghi lại.</p>
 
       {/* bộ lọc */}
-      <div className="glass p-4 mb-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-2">
-        <input aria-label="Tìm kiếm bài" className={`${inputCls} col-span-2`} placeholder="🔍 Tìm theo tên bài hoặc tag..." value={search} onChange={(e) => setSearch(e.target.value)} />
+      <div className="glass p-4 mb-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-2">
+        <input aria-label="Tìm kiếm bài" className={`${inputCls} col-span-2`} placeholder="🔍 Tìm theo tên bài..." value={search} onChange={(e) => setSearch(e.target.value)} />
         <select aria-label="Lọc theo rating" className={inputCls} value={ratingFilter} onChange={(e) => setRatingFilter(Number(e.target.value))}>
           <option value={0}>Mọi rating</option>
           {ratings.map((r) => <option key={r} value={r}>{r}</option>)}
-        </select>
-        <select aria-label="Lọc theo tag" className={inputCls} value={tagFilter} onChange={(e) => setTagFilter(e.target.value)}>
-          <option value="">Mọi tag</option>
-          {ALL_TAGS.map((t) => <option key={t} value={t}>{t}</option>)}
         </select>
         <input aria-label="Từ ngày" type="date" className={inputCls} value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
         <div className="flex gap-2">
@@ -110,9 +103,6 @@ export default function ProblemsPage() {
                   {p.contestId && <span>#{p.contestId}{p.problemIndex}</span>}
                   {p.solveTimeMinutes && <span>⏱️ {p.solveTimeMinutes} phút</span>}
                   {p.submissions && <span>📨 {p.submissions} lần nộp</span>}
-                  {p.tags.map((t) => (
-                    <span key={t} className="px-2 py-0.5 rounded-full bg-teal-50 text-teal-600 border border-teal-200 font-semibold">{t}</span>
-                  ))}
                 </div>
                 {p.note && <div className="text-xs text-slate-500 mt-1 italic">📝 {p.note}</div>}
               </div>

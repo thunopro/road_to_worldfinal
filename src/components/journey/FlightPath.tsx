@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { MILESTONES } from '../../data/milestones'
 import { journeyWidth, JOURNEY_HEIGHT, segmentPath, starPositions } from './geometry'
 
@@ -7,9 +8,12 @@ interface Props {
   unlockedIndex: number
 }
 
+// vị trí sao là hằng số — tính một lần ở module scope
+const STARS = starPositions()
+
 /** Đường hành trình phát sáng + các ngôi sao nhỏ nối các milestone */
-export default function FlightPath({ birdT, unlockedIndex }: Props) {
-  const stars = starPositions()
+function FlightPath({ birdT, unlockedIndex }: Props) {
+  const stars = STARS
 
   return (
     <svg
@@ -26,24 +30,26 @@ export default function FlightPath({ birdT, unlockedIndex }: Props) {
             {/* nền mờ của đường bay */}
             <path d={segmentPath(i)} fill="none" stroke="#ffffff" strokeOpacity={0.5} strokeWidth={7} strokeLinecap="round" />
             {done ? (
-              <path
-                d={segmentPath(i)}
-                className="flight-path"
-                fill="none"
-                stroke="#fbbf24"
-                strokeWidth={4.5}
-                strokeLinecap="round"
-              />
+              <>
+                {/* lớp glow tĩnh thay cho drop-shadow filter (nặng GPU) */}
+                <path d={segmentPath(i)} fill="none" stroke="#fbbf24" strokeOpacity={0.35} strokeWidth={11} strokeLinecap="round" />
+                <path d={segmentPath(i)} fill="none" stroke="#fbbf24" strokeWidth={4.5} strokeLinecap="round" />
+              </>
             ) : (
-              <path
-                d={segmentPath(i)}
-                className={active ? 'flight-path flight-path-dash' : ''}
-                fill="none"
-                stroke={active ? '#fcd34d' : '#cbd5e1'}
-                strokeWidth={active ? 4 : 3}
-                strokeDasharray="4 12"
-                strokeLinecap="round"
-              />
+              <>
+                {active && (
+                  <path d={segmentPath(i)} fill="none" stroke="#fcd34d" strokeOpacity={0.3} strokeWidth={10} strokeLinecap="round" />
+                )}
+                <path
+                  d={segmentPath(i)}
+                  className={active ? 'flight-path-dash' : ''}
+                  fill="none"
+                  stroke={active ? '#fcd34d' : '#cbd5e1'}
+                  strokeWidth={active ? 4 : 3}
+                  strokeDasharray="4 12"
+                  strokeLinecap="round"
+                />
+              </>
             )}
           </g>
         )
@@ -66,3 +72,5 @@ export default function FlightPath({ birdT, unlockedIndex }: Props) {
     </svg>
   )
 }
+
+export default memo(FlightPath)

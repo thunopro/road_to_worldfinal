@@ -3,7 +3,7 @@ import { MILESTONES } from '../../data/milestones'
 /** Hình học của bản đồ hành trình (đơn vị px trong khung cuộn ngang) */
 export const TOWER_SPACING = 300
 export const LEFT_PAD = 170
-export const JOURNEY_HEIGHT = 470
+export const JOURNEY_HEIGHT = 552
 
 /** cao độ đường bay tại mỗi tháp (đỉnh tháp) — lượn sóng cho sinh động */
 export const ANCHOR_Y = [318, 276, 306, 258, 294, 246, 278]

@@ -20,7 +20,6 @@ interface Props {
 
 export default function Sidebar({ page, onNavigate }: Props) {
   const user = useAppStore((s) => s.user)
-  const totalAC = useAppStore((s) => s.totalAC)
   const milestoneIndex = useAppStore((s) => s.milestoneIndex)
 
   return (
@@ -60,7 +59,7 @@ export default function Sidebar({ page, onNavigate }: Props) {
               <div className="text-[11px] text-sky-600 font-semibold truncate">
                 {RANK_TITLES[milestoneIndex]} · {MILESTONES[milestoneIndex].rating}
               </div>
-              <div className="text-[11px] text-slate-500">⚡ {totalAC} AC · 🪙 {user.coins}</div>
+              <div className="text-[11px] text-slate-500">🪙 {user.coins} xu</div>
             </div>
           </div>
         </div>

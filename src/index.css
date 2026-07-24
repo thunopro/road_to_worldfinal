@@ -8,7 +8,10 @@ body {
   margin: 0;
   min-height: 100vh;
   color: #0f2b46;
-  background: linear-gradient(180deg, #bfe3ff 0%, #dff2ff 45%, #fdf3e3 100%);
+  /* không dùng background-attachment: fixed — gây repaint toàn màn hình khi cuộn */
+  background: linear-gradient(180deg, #8ec5f2 0%, #b5dcf9 40%, #e6f4ff 75%, #f2f9ff 100%) no-repeat;
+  background-size: 100% 100vh;
+  background-color: #f2f9ff;
   overflow-x: hidden;
 }
 
@@ -21,23 +24,24 @@ body[data-sky="night"] {
   color: #eef2ff;
 }
 
+/* glass không dùng backdrop-filter (rất nặng GPU) — giả lập bằng nền trắng mờ đục */
 .glass {
-  @apply bg-white/65 backdrop-blur-md border border-white/70 rounded-2xl;
+  @apply bg-white/85 border border-white/80 rounded-2xl;
   box-shadow: 0 8px 32px rgba(80, 140, 200, 0.18);
 }
 
 body[data-sky="night"] .glass {
-  @apply bg-white/15 border-white/25;
+  @apply bg-[#2b3565]/90 border-white/25;
   box-shadow: 0 8px 32px rgba(10, 15, 50, 0.35);
 }
 
 .glass-strong {
-  @apply bg-white/80 backdrop-blur-xl border border-white/80 rounded-2xl;
+  @apply bg-white/95 border border-white/90 rounded-2xl;
   box-shadow: 0 10px 40px rgba(80, 140, 200, 0.25);
 }
 
 body[data-sky="night"] .glass-strong {
-  @apply bg-[#26305e]/85 border-white/20;
+  @apply bg-[#26305e]/95 border-white/20;
 }
 
 /* ---- clouds ---- */
@@ -52,6 +56,7 @@ body[data-sky="night"] .glass-strong {
   border-radius: 999px;
   filter: blur(6px);
   animation: cloud-drift linear infinite;
+  will-change: transform;
 }
 
 /* ---- floating particles ---- */
@@ -65,6 +70,21 @@ body[data-sky="night"] .glass-strong {
   border-radius: 999px;
   background: radial-gradient(circle, rgba(255, 235, 170, 0.95), rgba(255, 235, 170, 0));
   animation: particle-float ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* ---- sparkle stars ---- */
+@keyframes sparkle-twinkle {
+  0%, 100% { opacity: 0.15; transform: scale(0.7); }
+  50% { opacity: 0.9; transform: scale(1.2); }
+}
+
+.sparkle {
+  position: absolute;
+  color: #fff8dc;
+  font-size: 13px;
+  text-shadow: 0 0 6px rgba(255, 240, 180, 0.9);
+  animation: sparkle-twinkle 3.2s ease-in-out infinite;
 }
 
 /* ---- sun ---- */
@@ -74,11 +94,7 @@ body[data-sky="night"] .glass-strong {
   background: radial-gradient(circle, rgba(255, 236, 170, 0.95) 0%, rgba(255, 214, 120, 0.35) 45%, rgba(255, 214, 120, 0) 70%);
 }
 
-/* ---- glowing flight path ---- */
-.flight-path {
-  filter: drop-shadow(0 0 6px rgba(255, 214, 100, 0.9));
-}
-
+/* ---- glowing flight path (không dùng drop-shadow filter — nặng) ---- */
 @keyframes dash-flow {
   to { stroke-dashoffset: -32; }
 }
@@ -87,13 +103,97 @@ body[data-sky="night"] .glass-strong {
   animation: dash-flow 1.6s linear infinite;
 }
 
+/* ---- animation lặp cho nhân vật & UI (CSS thay cho JS để tránh giật lag) ---- */
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+@keyframes bob-fast {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes wing-flap-l {
+  0%, 100% { transform: rotate(18deg); }
+  50% { transform: rotate(-26deg); }
+}
+
+@keyframes wing-flap-r {
+  0%, 100% { transform: rotate(-18deg); }
+  50% { transform: rotate(26deg); }
+}
+
+@keyframes pulse-scale {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+@keyframes shake-x {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
+@keyframes spin-celebrate {
+  0% { transform: rotate(0deg) scale(1); }
+  40% { transform: rotate(360deg) scale(1.1); }
+  55%, 100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.9; }
+}
+
+@keyframes flag-wave {
+  0%, 100% { transform: skewY(0deg); }
+  50% { transform: skewY(6deg); }
+}
+
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes drift-fade {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-12px); opacity: 0; }
+}
+
+@keyframes star-twinkle {
+  0%, 100% { transform: scale(0.4); opacity: 0.3; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+
+@keyframes flame-wiggle {
+  0%, 100% { transform: scale(1) rotate(-3deg); }
+  50% { transform: scale(1.15) rotate(3deg); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes seed-fade {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.4); opacity: 0.6; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .cloud, .particle, .flight-path-dash { animation: none !important; }
+  .cloud, .particle, .flight-path-dash, .sparkle { animation: none !important; }
 }
 
 [data-reduced-motion="true"] .cloud,
 [data-reduced-motion="true"] .particle,
-[data-reduced-motion="true"] .flight-path-dash {
+[data-reduced-motion="true"] .flight-path-dash,
+[data-reduced-motion="true"] .sparkle {
   animation: none !important;
 }
 

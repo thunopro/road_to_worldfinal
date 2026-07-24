@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import QuoteBar from '../components/layout/QuoteBar'
 import StreakCard from '../components/streak/StreakCard'
 import { useAppStore } from '../store/useAppStore'
 import { localDateKey } from '../utils/dates'
@@ -89,14 +90,7 @@ export default function CalendarPage() {
 
         <div className="space-y-4">
           <StreakCard />
-          <div className="glass p-5">
-            <div className="font-extrabold mb-2">💡 Mẹo giữ lửa</div>
-            <ul className="text-sm text-slate-600 space-y-1.5 list-disc list-inside">
-              <li>Giải ít nhất 1 bài mỗi ngày để giữ chuỗi.</li>
-              <li>Mua <b>Streak Freeze 🧊</b> trong Bộ sưu tập để phòng ngày bận.</li>
-              <li>Bài dễ ngày bận, bài khó ngày rảnh — quan trọng là đều đặn.</li>
-            </ul>
-          </div>
+          <QuoteBar />
         </div>
       </div>
     </div>

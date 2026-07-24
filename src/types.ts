@@ -27,7 +27,6 @@ export type ItemSlot =
   | 'wing'
   | 'trail'
   | 'background'
-  | 'consumable'
 
 export interface ShopItem {
   id: string

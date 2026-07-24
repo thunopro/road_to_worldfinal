@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ALL_TAGS } from '../../data/sample'
 import { parseProblemUrl } from '../../services/codeforces'
 import { useAppStore, type AddProblemResult } from '../../store/useAppStore'
 import type { Problem, ProblemStatus } from '../../types'
@@ -20,7 +19,6 @@ interface FormState {
   contestId: string
   problemIndex: string
   rating: number
-  tags: string[]
   status: ProblemStatus
   note: string
   solveTimeMinutes: string
@@ -35,7 +33,6 @@ function emptyForm(defaultRating: number): FormState {
     contestId: '',
     problemIndex: '',
     rating: defaultRating,
-    tags: [],
     status: 'AC',
     note: '',
     solveTimeMinutes: '',
@@ -67,7 +64,6 @@ export default function SubmitProblemModal({ open, onClose, editing, onSubmitted
         contestId: editing.contestId ?? '',
         problemIndex: editing.problemIndex ?? '',
         rating: editing.rating,
-        tags: editing.tags,
         status: editing.status,
         note: editing.note ?? '',
         solveTimeMinutes: editing.solveTimeMinutes ? String(editing.solveTimeMinutes) : '',
@@ -118,7 +114,7 @@ export default function SubmitProblemModal({ open, onClose, editing, onSubmitted
       contestId: form.contestId.trim() || undefined,
       problemIndex: form.problemIndex.trim() || undefined,
       rating: form.rating,
-      tags: form.tags,
+      tags: editing?.tags ?? [],
       status: form.status,
       note: form.note.trim() || undefined,
       solveTimeMinutes: form.solveTimeMinutes ? Number(form.solveTimeMinutes) : undefined,
@@ -239,27 +235,6 @@ export default function SubmitProblemModal({ open, onClose, editing, onSubmitted
                     ))}
                   </select>
                   {errors.rating && <div className={errCls}>{errors.rating}</div>}
-                </div>
-              </div>
-
-              <div>
-                <span className={labelCls}>Tag thuật toán</span>
-                <div className="flex flex-wrap gap-1.5">
-                  {ALL_TAGS.map((tag) => {
-                    const on = form.tags.includes(tag)
-                    return (
-                      <button
-                        key={tag}
-                        type="button"
-                        onClick={() => set({ tags: on ? form.tags.filter((t) => t !== tag) : [...form.tags, tag] })}
-                        aria-pressed={on}
-                        className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition-colors border
-                          ${on ? 'bg-teal-500 text-white border-teal-500' : 'bg-white/70 text-slate-500 border-slate-200 hover:border-teal-300'}`}
-                      >
-                        {tag}
-                      </button>
-                    )
-                  })}
                 </div>
               </div>
 

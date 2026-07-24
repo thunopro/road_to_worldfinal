@@ -13,11 +13,11 @@ Website game hóa theo dõi quá trình luyện tập Codeforces. Thay vì một
 - **Trải nghiệm cốt lõi**: Nộp bài AC → hạt năng lượng bay tới chim → chim ăn & phát sáng → chim bay tiến lên → thanh tiến độ tăng → confetti + toast + âm thanh (có thể tắt/bỏ qua hiệu ứng).
 - **Mở khóa milestone**: pháo hoa, ánh sáng vàng, huy hiệu, xu thưởng và trang phục mới cho chim.
 - **Nhiệm vụ** hằng ngày & hằng tuần với tiến độ tính từ dữ liệu thật và nút nhận thưởng.
-- **Hệ thống streak** với ngọn lửa, kỷ lục, lời nhắc và vật phẩm **Streak Freeze 🧊**.
+- **Hệ thống streak** với ngọn lửa, kỷ lục và lời nhắc — nghỉ 1 ngày là mất chuỗi, tạo động lực luyện tập mỗi ngày.
 - **Bộ sưu tập / cửa hàng**: dùng xu mở khóa khăn, kính, mũ, màu cánh, trail ánh sáng và cả **bầu trời hoàng hôn / đêm ngân hà** (đổi theme thật).
-- **Trang bài tập**: tìm kiếm, lọc theo rating/tag/ngày, sắp xếp, sửa, xóa, đánh dấu "cần làm lại".
+- **Trang bài tập**: tìm kiếm, lọc theo rating/ngày, sắp xếp, sửa, xóa, đánh dấu "cần làm lại".
 - **Lịch luyện tập** dạng heatmap theo tháng.
-- **Thống kê**: AC theo ngày/tuần, phân bố rating/tag, tỷ lệ milestone, nhận xét tự động điểm mạnh/yếu.
+- **Thống kê**: AC theo ngày/tuần, phân bố rating, tỷ lệ milestone, nhận xét tự động về nhịp độ luyện tập.
 - **Thành tích + BXH cá nhân** (tự đua với chính mình theo ngày/tuần).
 - **Responsive**: sidebar trên desktop, bottom navigation trên mobile.
 - **Accessibility**: aria-label/role đầy đủ, tùy chọn giảm chuyển động, tắt âm thanh, keyboard focus.
@@ -85,8 +85,12 @@ src/
 | Styling | Tailwind CSS 4, glassmorphism |
 | Animation | Framer Motion + CSS keyframes |
 | State | Zustand (persist → LocalStorage) |
-| Đồ họa | SVG tự vẽ 100% (chim, tháp, đường bay) — không dùng asset có bản quyền |
+| Đồ họa | Chim + đường bay + đảo mây: SVG tự vẽ. Công trình milestone: bộ asset **Tiny Swords** của Pixel Frog (giấy phép CC0 — miễn phí, không cần ghi công), đổi tông màu theo tier bằng CSS filter |
 | Âm thanh | WebAudio API tổng hợp (không cần file mp3) |
+
+## 🎨 Nguồn asset
+
+- Sprite công trình milestone: [Tiny Swords — Pixel Frog](https://pixelfrog-assets.itch.io/tiny-swords) (CC0), tải qua mirror [ZieIony/TinySwords](https://github.com/ZieIony/TinySwords). Các file nằm tại `src/assets/towers/`.
 
 ## 🔮 Hướng phát triển
 

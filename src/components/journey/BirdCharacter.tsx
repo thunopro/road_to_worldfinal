@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { memo, type CSSProperties } from 'react'
 import type { BirdVisualState } from '../../types'
 import { itemById } from '../../data/shop'
 import { useAppStore } from '../../store/useAppStore'
@@ -8,11 +8,21 @@ interface Props {
   size?: number
 }
 
+/** cấu hình animation CSS cho từng trạng thái của chim */
+const BODY_ANIM: Record<BirdVisualState, string> = {
+  idle: 'bob 2.4s ease-in-out infinite',
+  flying: 'bob-fast 0.7s ease-in-out infinite',
+  eating: 'pulse-scale 0.9s ease-in-out infinite',
+  celebrating: 'spin-celebrate 1.7s ease-in-out infinite',
+  tired: 'bob 3.2s ease-in-out infinite',
+  worried: 'shake-x 1.6s ease-in-out infinite',
+}
+
 /**
  * Linh vật: chú chim phi công đáng yêu, vẽ hoàn toàn bằng SVG.
- * Trang phục (khăn, kính, mũ, màu cánh) lấy từ bộ sưu tập đã trang bị.
+ * Mọi chuyển động lặp dùng CSS keyframes (chạy trên compositor) để không gây giật lag.
  */
-export default function BirdCharacter({ state, size = 120 }: Props) {
+function BirdCharacter({ state, size = 120 }: Props) {
   const equipped = useAppStore((s) => s.collection.equipped)
   const reducedMotion = useAppStore((s) => s.settings.reducedMotion)
 
@@ -24,46 +34,27 @@ export default function BirdCharacter({ state, size = 120 }: Props) {
   const flap =
     state === 'flying' ? 0.3 : state === 'celebrating' ? 0.45 : state === 'tired' ? 2.4 : 1.1
 
-  const bodyAnim = reducedMotion
-    ? {}
-    : state === 'flying'
-      ? { y: [0, -4, 0], rotate: [6, 8, 6] }
-      : state === 'celebrating'
-        ? { rotate: [0, 360], scale: [1, 1.12, 1] }
-        : state === 'eating'
-          ? { scale: [1, 1.12, 1], y: [0, 2, 0] }
-          : state === 'tired'
-            ? { y: [0, 3, 0], rotate: [4, 5, 4] }
-            : state === 'worried'
-              ? { x: [0, -2, 2, 0], y: [0, -2, 0] }
-              : { y: [0, -7, 0] } // idle: lơ lửng đập cánh nhẹ
-
-  const bodyTransition =
-    state === 'celebrating'
-      ? { duration: 1.1, repeat: Infinity, repeatDelay: 0.6, ease: 'easeInOut' as const }
-      : { duration: state === 'flying' ? 0.7 : 2.4, repeat: Infinity, ease: 'easeInOut' as const }
+  /** helper: trả về style animation, tôn trọng chế độ giảm chuyển động */
+  const anim = (value: string): CSSProperties =>
+    reducedMotion ? {} : { animation: value }
 
   const glowing = state === 'eating' || state === 'celebrating'
 
   return (
-    <motion.div
-      style={{ width: size, height: size }}
-      animate={bodyAnim}
-      transition={bodyTransition}
+    <div
+      style={{ width: size, height: size, ...anim(BODY_ANIM[state]) }}
       aria-label={`Chú chim đang ở trạng thái ${state}`}
       role="img"
     >
-      <svg viewBox="0 0 140 140" width="100%" height="100%">
+      <svg
+        viewBox="0 0 140 140"
+        width="100%"
+        height="100%"
+        style={state === 'flying' ? { transform: 'rotate(7deg)' } : undefined}
+      >
         {/* hào quang khi ăn năng lượng / chúc mừng */}
         {glowing && (
-          <motion.circle
-            cx={70}
-            cy={78}
-            r={52}
-            fill="url(#birdGlow)"
-            animate={reducedMotion ? {} : { opacity: [0.4, 0.9, 0.4], scale: [0.9, 1.1, 0.9] }}
-            transition={{ duration: 0.9, repeat: Infinity }}
-          />
+          <circle cx={70} cy={78} r={52} fill="url(#birdGlow)" style={anim('glow-pulse 0.9s ease-in-out infinite')} />
         )}
         <defs>
           <radialGradient id="birdGlow">
@@ -73,7 +64,7 @@ export default function BirdCharacter({ state, size = 120 }: Props) {
         </defs>
 
         {/* cánh trái */}
-        <motion.ellipse
+        <ellipse
           cx={34}
           cy={80}
           rx={17}
@@ -81,12 +72,10 @@ export default function BirdCharacter({ state, size = 120 }: Props) {
           fill={wingColor}
           stroke="#7aa8d8"
           strokeWidth={1.5}
-          style={{ originX: '48px', originY: '76px' }}
-          animate={reducedMotion ? {} : { rotate: [18, -26, 18] }}
-          transition={{ duration: flap, repeat: Infinity, ease: 'easeInOut' }}
+          style={{ transformOrigin: '48px 76px', ...anim(`wing-flap-l ${flap}s ease-in-out infinite`) }}
         />
         {/* cánh phải */}
-        <motion.ellipse
+        <ellipse
           cx={106}
           cy={80}
           rx={17}
@@ -94,9 +83,7 @@ export default function BirdCharacter({ state, size = 120 }: Props) {
           fill={wingColor}
           stroke="#7aa8d8"
           strokeWidth={1.5}
-          style={{ originX: '92px', originY: '76px' }}
-          animate={reducedMotion ? {} : { rotate: [-18, 26, -18] }}
-          transition={{ duration: flap, repeat: Infinity, ease: 'easeInOut' }}
+          style={{ transformOrigin: '92px 76px', ...anim(`wing-flap-r ${flap}s ease-in-out infinite`) }}
         />
 
         {/* thân */}
@@ -124,20 +111,22 @@ export default function BirdCharacter({ state, size = 120 }: Props) {
           <path d="M54 46 L58 32 L66 42 L70 28 L74 42 L82 32 L86 46 Z" fill="#f59e0b" stroke="#d97706" strokeWidth={1.5} />
         )}
 
-        {/* kính phi công (gọng trên trán) */}
-        <rect x={40} y={50} width={60} height={5} rx={2.5} fill="#64748b" opacity={0.8} />
-        <circle cx={56} cy={52} r={9} fill={goggleColor} opacity={0.45} stroke="#475569" strokeWidth={2.5} />
-        <circle cx={84} cy={52} r={9} fill={goggleColor} opacity={0.45} stroke="#475569" strokeWidth={2.5} />
+        {/* kính phi công (gọng trên trán, viền vàng) */}
+        <rect x={40} y={50} width={60} height={5} rx={2.5} fill="#8b6d3f" opacity={0.85} />
+        <circle cx={56} cy={52} r={9} fill={goggleColor} opacity={0.5} stroke="#d4af37" strokeWidth={2.5} />
+        <circle cx={84} cy={52} r={9} fill={goggleColor} opacity={0.5} stroke="#d4af37" strokeWidth={2.5} />
+
+        {/* má hồng */}
+        <ellipse cx={46} cy={77} rx={5} ry={3.2} fill="#fda4af" opacity={0.7} />
+        <ellipse cx={94} cy={77} rx={5} ry={3.2} fill="#fda4af" opacity={0.7} />
 
         {/* mắt to biểu cảm */}
         {state === 'eating' || state === 'celebrating' ? (
-          // mắt cười khép cong
           <g stroke="#0f2b46" strokeWidth={3} strokeLinecap="round" fill="none">
             <path d="M50 68 Q56 62 62 68" />
             <path d="M78 68 Q84 62 90 68" />
           </g>
         ) : state === 'tired' ? (
-          // mắt lim dim
           <g>
             <circle cx={56} cy={69} r={7.5} fill="#fff" stroke="#94a3b8" strokeWidth={1.5} />
             <circle cx={84} cy={69} r={7.5} fill="#fff" stroke="#94a3b8" strokeWidth={1.5} />
@@ -169,13 +158,12 @@ export default function BirdCharacter({ state, size = 120 }: Props) {
             <path d="M62 78 Q70 74 78 78 L70 84 Z" fill="#fb923c" />
             <path d="M62 80 Q70 90 78 80 L70 85 Z" fill="#f97316" />
             {/* hạt năng lượng đang ăn */}
-            <motion.circle
+            <circle
               cx={70}
               cy={83}
               r={4}
               fill="#fde047"
-              animate={reducedMotion ? {} : { scale: [1, 0.4, 1], opacity: [1, 0.6, 1] }}
-              transition={{ duration: 0.6, repeat: Infinity }}
+              style={{ transformOrigin: '70px 83px', ...anim('seed-fade 0.6s ease-in-out infinite') }}
             />
           </g>
         ) : (
@@ -183,16 +171,11 @@ export default function BirdCharacter({ state, size = 120 }: Props) {
         )}
 
         {/* khăn choàng */}
+        <path d="M46 92 Q70 102 94 92 L92 100 Q70 110 48 100 Z" fill={scarfColor} />
         <path
-          d={`M46 92 Q70 102 94 92 L92 100 Q70 110 48 100 Z`}
-          fill={scarfColor}
-        />
-        <motion.path
           d="M88 96 Q100 100 104 110 Q96 108 90 102 Z"
           fill={scarfColor}
-          animate={reducedMotion ? {} : { rotate: [0, 8, 0], x: [0, 2, 0] }}
-          transition={{ duration: 1.4, repeat: Infinity }}
-          style={{ originX: '88px', originY: '96px' }}
+          style={{ transformOrigin: '88px 96px', ...anim('flag-wave 1.4s ease-in-out infinite') }}
         />
 
         {/* chân */}
@@ -203,27 +186,25 @@ export default function BirdCharacter({ state, size = 120 }: Props) {
 
         {/* mồ hôi khi lo lắng */}
         {state === 'worried' && (
-          <motion.path
+          <path
             d="M98 56 Q102 62 98 66 Q94 62 98 56Z"
             fill="#7dd3fc"
-            animate={reducedMotion ? {} : { y: [0, 6], opacity: [1, 0] }}
-            transition={{ duration: 1.2, repeat: Infinity }}
+            style={anim('drift-fade 1.2s ease-in infinite')}
           />
         )}
 
         {/* Zzz khi mệt mỏi */}
         {state === 'tired' && (
-          <motion.text
+          <text
             x={104}
             y={48}
             fontSize={16}
             fontWeight={700}
             fill="#64748b"
-            animate={reducedMotion ? {} : { y: [-4, -14], opacity: [1, 0] }}
-            transition={{ duration: 1.8, repeat: Infinity }}
+            style={anim('drift-fade 1.8s ease-in infinite')}
           >
             Zz
-          </motion.text>
+          </text>
         )}
 
         {/* sao lấp lánh khi chúc mừng */}
@@ -232,17 +213,21 @@ export default function BirdCharacter({ state, size = 120 }: Props) {
             {[
               [24, 40], [116, 44], [30, 110], [112, 108], [70, 20],
             ].map(([x, y], i) => (
-              <motion.path
+              <path
                 key={i}
                 d={`M${x} ${y - 6} L${x + 1.8} ${y - 1.8} L${x + 6} ${y} L${x + 1.8} ${y + 1.8} L${x} ${y + 6} L${x - 1.8} ${y + 1.8} L${x - 6} ${y} L${x - 1.8} ${y - 1.8} Z`}
                 fill="#fbbf24"
-                animate={reducedMotion ? {} : { scale: [0.4, 1.2, 0.4], opacity: [0.3, 1, 0.3] }}
-                transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.15 }}
+                style={{
+                  transformOrigin: `${x}px ${y}px`,
+                  ...anim(`star-twinkle 0.8s ease-in-out ${i * 0.15}s infinite`),
+                }}
               />
             ))}
           </g>
         )}
       </svg>
-    </motion.div>
+    </div>
   )
 }
+
+export default memo(BirdCharacter)

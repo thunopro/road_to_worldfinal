@@ -10,14 +10,12 @@ const SLOT_LABELS: Array<{ slot: ItemSlot; label: string }> = [
   { slot: 'wing', label: '🪽 Màu cánh' },
   { slot: 'trail', label: '✨ Trail ánh sáng' },
   { slot: 'background', label: '🌇 Bầu trời' },
-  { slot: 'consumable', label: '🧊 Vật phẩm' },
 ]
 
 /** Bộ sưu tập & cửa hàng: dùng xu mở khóa trang phục cho chim */
 export default function CollectionPage() {
   const user = useAppStore((s) => s.user)
   const collection = useAppStore((s) => s.collection)
-  const streak = useAppStore((s) => s.streak)
   const buyItem = useAppStore((s) => s.buyItem)
   const equipItem = useAppStore((s) => s.equipItem)
   const pushToast = useAppStore((s) => s.pushToast)
@@ -42,7 +40,6 @@ export default function CollectionPage() {
           <div className="text-sm text-slate-500">Diện mạo hiện tại của chú chim đồng hành</div>
           <div className="mt-2 flex items-center gap-3 font-extrabold">
             <span className="text-amber-600">🪙 {user.coins} xu</span>
-            <span className="text-sky-600">🧊 {streak.freezes} freeze</span>
           </div>
         </div>
       </div>
@@ -71,14 +68,7 @@ export default function CollectionPage() {
                     <div className="text-xs text-slate-500 flex-1">{item.desc}</div>
                     <div className="mt-3 flex items-center justify-between">
                       <span className="text-sm font-extrabold text-amber-600">{item.price === 0 ? 'Miễn phí' : `🪙 ${item.price}`}</span>
-                      {item.slot === 'consumable' ? (
-                        <button
-                          onClick={() => buy(item.id, item.name, item.price)}
-                          className="px-3 py-1.5 rounded-full text-xs font-extrabold text-white bg-sky-500 hover:bg-sky-600 transition-colors"
-                        >
-                          Mua
-                        </button>
-                      ) : equipped ? (
+                      {equipped ? (
                         <span className="px-3 py-1.5 rounded-full text-xs font-extrabold bg-amber-100 text-amber-600">Đang dùng ⭐</span>
                       ) : owned ? (
                         <button

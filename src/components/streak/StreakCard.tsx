@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import { inactivityGap, useAppStore } from '../../store/useAppStore'
 
 /** Thẻ chuỗi ngày luyện tập với ngọn lửa */
@@ -11,25 +10,24 @@ export default function StreakCard() {
   return (
     <div className="glass p-5 flex flex-col gap-3">
       <div className="flex items-center gap-3">
-        <motion.span
-          className="text-4xl"
-          animate={reducedMotion ? {} : { scale: [1, 1.15, 1], rotate: [-3, 3, -3] }}
-          transition={{ duration: 1.2, repeat: Infinity }}
+        <span
+          className="text-4xl inline-block"
+          style={reducedMotion ? undefined : { animation: 'flame-wiggle 1.2s ease-in-out infinite' }}
           aria-hidden="true"
         >
           🔥
-        </motion.span>
+        </span>
         <div>
           <div className="text-xl font-extrabold">
             {streak.current} ngày <span className="text-sm font-semibold text-slate-500">chuỗi hiện tại</span>
           </div>
-          <div className="text-xs text-slate-500 font-semibold">🏆 Kỷ lục: {streak.longest} ngày · 🧊 Freeze: {streak.freezes}</div>
+          <div className="text-xs text-slate-500 font-semibold">🏆 Kỷ lục: {streak.longest} ngày</div>
         </div>
       </div>
 
       {inDanger && (
         <div className="rounded-xl bg-amber-50 border border-amber-300 px-3 py-2 text-xs font-semibold text-amber-700">
-          ⚠️ Hôm nay chúng ta vẫn chưa luyện tập. Đừng để ngọn lửa tắt nhé!
+          ⚠️ Hôm nay chúng ta vẫn chưa luyện tập. Chỉ cần nghỉ 1 ngày là mất chuỗi — đừng để ngọn lửa tắt nhé!
         </div>
       )}
       {gap >= 3 && (

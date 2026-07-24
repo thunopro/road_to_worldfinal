@@ -38,7 +38,8 @@ function pageFromHash(): PageId {
 
 export default function App() {
   const [page, setPage] = useState<PageId>(pageFromHash)
-  const [submitOpen, setSubmitOpen] = useState(false)
+  const submitOpen = useAppStore((s) => s.submitOpen)
+  const setSubmitOpen = useAppStore((s) => s.setSubmitOpen)
 
   const phase = useAppStore((s) => s.phase)
   const settings = useAppStore((s) => s.settings)
@@ -86,11 +87,11 @@ export default function App() {
     <div className="flex min-h-screen">
       <Sidebar page={page} onNavigate={navigate} />
 
-      <main className="flex-1 min-w-0 px-4 lg:px-6 py-5 pb-28 lg:pb-10 max-w-[1400px] mx-auto w-full">
+      <main className="flex-1 min-w-0 px-4 lg:px-6 py-5 pb-28 lg:pb-10 w-full">
         <Page />
       </main>
 
-      <SubmitProblemButton onClick={() => setSubmitOpen(true)} />
+      {page !== 'home' && <SubmitProblemButton onClick={() => setSubmitOpen(true)} />}
       <SubmitProblemModal open={submitOpen} onClose={() => setSubmitOpen(false)} onSubmitted={handleSubmitted} />
 
       {/* nút bỏ qua hiệu ứng */}

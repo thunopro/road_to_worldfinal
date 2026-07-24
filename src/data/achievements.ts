@@ -9,7 +9,7 @@ export const ACHIEVEMENTS: AchievementDef[] = [
   { id: 'streak-7', title: 'Tuần lửa', desc: 'Chuỗi 7 ngày luyện tập', emoji: '🔥' },
   { id: 'streak-21', title: 'Ý chí thép', desc: 'Chuỗi 21 ngày luyện tập', emoji: '⚔️' },
   { id: 'coins-500', title: 'Đại gia hạt năng lượng', desc: 'Tích lũy 500 xu', emoji: '💰' },
-  { id: 'tags-5', title: 'Đa tài', desc: 'AC bài thuộc 5 tag khác nhau', emoji: '🎨' },
+  { id: 'day-3', title: 'Cơn lốc một ngày', desc: 'AC 3 bài trong cùng một ngày', emoji: '🌪️' },
   { id: 'milestone-1400', title: 'Chinh phục 1400', desc: 'Mở khóa milestone 1400', emoji: '🏝️' },
   { id: 'milestone-1600', title: 'Chinh phục 1600', desc: 'Mở khóa milestone 1600', emoji: '🌊' },
   { id: 'milestone-1800', title: 'Chinh phục 1800', desc: 'Mở khóa milestone 1800', emoji: '🔮' },
@@ -36,7 +36,13 @@ export function isAchievementUnlocked(def: AchievementDef, ctx: AchievementConte
     case 'streak-7': return ctx.longestStreak >= 7
     case 'streak-21': return ctx.longestStreak >= 21
     case 'coins-500': return ctx.coins >= 500
-    case 'tags-5': return new Set(ctx.problems.filter((p) => p.status === 'AC').flatMap((p) => p.tags)).size >= 5
+    case 'day-3': {
+      const byDay = new Map<string, number>()
+      for (const p of ctx.problems) {
+        if (p.status === 'AC') byDay.set(p.date, (byDay.get(p.date) ?? 0) + 1)
+      }
+      return [...byDay.values()].some((c) => c >= 3)
+    }
     default:
       if (def.id.startsWith('milestone-')) return ctx.badges.includes(def.id)
       return false

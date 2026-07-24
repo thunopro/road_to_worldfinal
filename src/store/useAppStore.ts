@@ -10,7 +10,6 @@ export interface StreakState {
   current: number
   longest: number
   lastActiveDate: string | null
-  freezes: number
 }
 
 export interface SettingsState {
@@ -49,6 +48,7 @@ interface AppState {
   phase: CelebrationPhase
   pendingUnlock: number | null
   toasts: ToastItem[]
+  submitOpen: boolean
 
   // ---- actions ----
   addProblem: (p: Omit<Problem, 'id' | 'createdAt'>) => AddProblemResult
@@ -61,6 +61,7 @@ interface AppState {
   setSettings: (patch: Partial<SettingsState>) => void
   setUserName: (name: string) => void
   setPhase: (phase: CelebrationPhase) => void
+  setSubmitOpen: (open: boolean) => void
   clearPendingUnlock: () => void
   pushToast: (t: Omit<ToastItem, 'id'>) => void
   dismissToast: (id: number) => void
@@ -87,7 +88,7 @@ function seedState() {
     milestoneIndex: 0,
     milestoneProgress: 45,
     totalAC: 45,
-    streak: { current: 7, longest: 21, lastActiveDate: yesterday, freezes: 1 },
+    streak: { current: 7, longest: 21, lastActiveDate: yesterday },
     questClaims: {},
     reviewedDates: [],
     collection: { owned: [...DEFAULT_OWNED], equipped: { ...DEFAULT_EQUIPPED } },
@@ -102,6 +103,7 @@ export const useAppStore = create<AppState>()(
       phase: 'none' as CelebrationPhase,
       pendingUnlock: null,
       toasts: [],
+      submitOpen: false,
 
       addProblem: (input) => {
         const p: Problem = {
@@ -204,14 +206,6 @@ export const useAppStore = create<AppState>()(
         const s = get()
         const item = itemById(itemId)
         if (!item) return false
-        if (item.slot === 'consumable') {
-          if (s.user.coins < item.price) return false
-          set({
-            user: { ...s.user, coins: s.user.coins - item.price },
-            streak: { ...s.streak, freezes: s.streak.freezes + 1 },
-          })
-          return true
-        }
         if (s.collection.owned.includes(itemId) || s.user.coins < item.price) return false
         set({
           user: { ...s.user, coins: s.user.coins - item.price },
@@ -223,7 +217,7 @@ export const useAppStore = create<AppState>()(
       equipItem: (itemId) => {
         const s = get()
         const item = itemById(itemId)
-        if (!item || item.slot === 'consumable' || !s.collection.owned.includes(itemId)) return
+        if (!item || !s.collection.owned.includes(itemId)) return
         set({
           collection: {
             ...s.collection,
@@ -235,6 +229,7 @@ export const useAppStore = create<AppState>()(
       setSettings: (patch) => set((s) => ({ settings: { ...s.settings, ...patch } })),
       setUserName: (name) => set((s) => ({ user: { ...s.user, name: name.trim() || 'SkyCoder' } })),
       setPhase: (phase) => set({ phase }),
+      setSubmitOpen: (submitOpen) => set({ submitOpen }),
       clearPendingUnlock: () => set({ pendingUnlock: null }),
 
       pushToast: (t) => {
@@ -244,29 +239,19 @@ export const useAppStore = create<AppState>()(
       },
       dismissToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
 
-      /** kiểm tra streak khi mở app: dùng Streak Freeze nếu lỡ nghỉ 1 ngày, reset nếu nghỉ lâu hơn */
+      /** kiểm tra streak khi mở app: nghỉ quá 1 ngày là mất chuỗi */
       checkStreakOnLoad: () => {
         const s = get()
-        const { lastActiveDate, current, freezes } = s.streak
+        const { lastActiveDate, current } = s.streak
         if (!lastActiveDate || current === 0) return
         const gap = daysBetween(lastActiveDate, localDateKey())
         if (gap <= 1) return
-        if (gap === 2 && freezes > 0) {
-          set({
-            streak: {
-              ...s.streak,
-              freezes: freezes - 1,
-              lastActiveDate: addDays(lastActiveDate, 1),
-            },
-          })
-          get().pushToast({
-            title: 'Streak Freeze đã kích hoạt! ❄️',
-            subtitle: 'Chuỗi ngày của bạn được bảo vệ. Hãy luyện tập ngay hôm nay nhé!',
-            tone: 'info',
-          })
-          return
-        }
         set({ streak: { ...s.streak, current: 0 } })
+        get().pushToast({
+          title: 'Chuỗi ngày đã bị mất 💔',
+          subtitle: 'Không sao cả! AC một bài hôm nay để nhóm lại ngọn lửa nhé.',
+          tone: 'warn',
+        })
       },
 
       resetAll: () => set({ ...seedState(), phase: 'none', pendingUnlock: null }),
