@@ -48,10 +48,11 @@ function SubmitCard() {
   )
 }
 
-/** Trang chủ tối giản: header, hành trình, tiến độ + nộp bài, danh ngôn */
+/** Trang chủ tối giản: danh ngôn nổi bật, header, hành trình, tiến độ + nộp bài */
 export default function HomePage() {
   return (
     <div>
+      <QuoteBar hero className="mb-4" />
       <HeaderStats />
       <JourneyMap />
 
@@ -59,8 +60,6 @@ export default function HomePage() {
         <ProgressPanel />
         <SubmitCard />
       </div>
-
-      <QuoteBar className="mt-4" />
     </div>
   )
 }
