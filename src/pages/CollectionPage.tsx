@@ -1,11 +1,64 @@
 import { useState } from 'react'
 import BirdCharacter from '../components/journey/BirdCharacter'
 import KnightCharacter from '../components/journey/KnightCharacter'
-import { gearById, RARITY_META, totalPower, SLOT_LABELS as GEAR_SLOT_LABELS } from '../data/equipment'
+import {
+  CONSUMABLES,
+  characterStats,
+  gearById,
+  itemIcon,
+  RARITY_META,
+  SLOT_ICONS,
+  SLOT_LABELS as GEAR_SLOT_LABELS,
+  type GearSlot,
+} from '../data/equipment'
 import { MATERIALS } from '../data/materials'
 import { SHOP_ITEMS } from '../data/shop'
 import { useAppStore } from '../store/useAppStore'
 import type { ItemSlot } from '../types'
+
+/** thứ tự ô trang bị quanh nhân vật: trái trên→dưới, phải trên→dưới */
+const DOLL_LEFT: GearSlot[] = ['helmet', 'armor', 'boots']
+const DOLL_RIGHT: GearSlot[] = ['weapon', 'shield', 'ring']
+
+/** một ô trang bị trên paper-doll: có đồ thì hiện icon + viền độ hiếm, click để tháo */
+function GearSlotBox({ slot }: { slot: GearSlot }) {
+  const equipment = useAppStore((s) => s.equipment)
+  const unequipGear = useAppStore((s) => s.unequipGear)
+  const pushToast = useAppStore((s) => s.pushToast)
+  const gear = equipment[slot] ? gearById(equipment[slot]) : undefined
+
+  if (!gear) {
+    return (
+      <div className="game-inset w-[72px] h-[72px] flex flex-col items-center justify-center gap-0.5 opacity-70">
+        <span className="text-xl grayscale opacity-60" aria-hidden="true">{SLOT_ICONS[slot]}</span>
+        <span className="text-[9px] font-bold text-[#8a7550]">{GEAR_SLOT_LABELS[slot]}</span>
+      </div>
+    )
+  }
+
+  const meta = RARITY_META[gear.rarity]
+  const icon = itemIcon(gear.id)
+  return (
+    <button
+      onClick={() => {
+        unequipGear(slot)
+        pushToast({ title: `Đã tháo ${gear.name}`, tone: 'info' })
+      }}
+      title={`${gear.name} (${meta.label}) — bấm để tháo`}
+      className="game-inset w-[72px] h-[72px] flex flex-col items-center justify-center gap-0.5 hover:brightness-105"
+      style={{ boxShadow: `inset 0 0 0 2px ${meta.color}`, background: `${meta.color}1a` }}
+    >
+      {icon ? (
+        <img src={icon} alt={gear.name} className="w-10 h-10" style={{ imageRendering: 'pixelated' }} />
+      ) : (
+        <span className="text-2xl" aria-hidden="true">{gear.emoji}</span>
+      )}
+      <span className="text-[9px] font-extrabold truncate max-w-[64px]" style={{ color: meta.color }}>
+        {gear.name}
+      </span>
+    </button>
+  )
+}
 
 const SLOT_LABELS: Array<{ slot: ItemSlot; label: string }> = [
   { slot: 'scarf', label: '🧣 Khăn choàng' },
@@ -29,7 +82,8 @@ export default function CollectionPage() {
   const pushToast = useAppStore((s) => s.pushToast)
   const [openMaterial, setOpenMaterial] = useState<string | null>(null)
 
-  const power = totalPower(equipment)
+  const consumables = useAppStore((s) => s.consumables)
+  const stats = characterStats(equipment)
   const ownedGear = inventory.map((id) => gearById(id)).filter((g) => g !== undefined)
 
   const buy = (id: string, name: string, price: number) => {
@@ -53,23 +107,69 @@ export default function CollectionPage() {
       <h1 className="text-2xl font-extrabold mb-1">🛒 Cửa hàng & Kho đồ</h1>
       <p className="text-sm text-slate-500 mb-4">Dùng xu cày được để mở khóa học liệu thuật toán, sắm trang bị và trang phục.</p>
 
-      {/* hồ sơ hiệp sĩ + sức mạnh */}
+      {/* màn hình nhân vật: paper-doll trang bị + chỉ số + đai thuốc */}
       <div className="game-panel p-4 mb-5">
-        <div className="flex flex-col sm:flex-row items-center gap-5">
-          <KnightCharacter state="idle" size={110} />
-          <div className="flex-1 text-center sm:text-left">
-            <div className="font-extrabold text-lg text-[#3d3222]">{user.name}</div>
-            <div className="text-sm text-[#8a7550]">Hiệp sĩ đồng hành của bạn</div>
-            <div className="mt-1 font-extrabold text-amber-600">🪙 {user.coins} xu</div>
+        <div className="flex flex-col lg:flex-row items-center gap-6">
+          {/* paper-doll: 2 cột ô trang bị kẹp hiệp sĩ ở giữa */}
+          <div className="flex items-center gap-3">
+            <div className="flex flex-col gap-2">
+              {DOLL_LEFT.map((slot) => <GearSlotBox key={slot} slot={slot} />)}
+            </div>
+            <div className="flex flex-col items-center">
+              <KnightCharacter state="idle" size={130} />
+              <div className="font-extrabold text-[#3d3222] leading-tight">{user.name}</div>
+              <div className="font-extrabold text-amber-600 text-sm">🪙 {user.coins} xu</div>
+            </div>
+            <div className="flex flex-col gap-2">
+              {DOLL_RIGHT.map((slot) => <GearSlotBox key={slot} slot={slot} />)}
+            </div>
           </div>
-          <div className="grid grid-cols-5 gap-2 text-center">
-            {([['⚔️', 'ATK', power.atk], ['🛡️', 'DEF', power.def], ['❤️', 'HP', power.hp], ['🍀', 'LUCK', power.luck], ['💪', 'Lực chiến', power.power]] as const).map(([e, l, v]) => (
-              <div key={l} className="game-inset px-2.5 py-1.5">
-                <div aria-hidden="true">{e}</div>
-                <div className="text-sm font-extrabold text-[#3d3222]">{v}</div>
-                <div className="text-[9px] font-bold text-[#8a7550]">{l}</div>
+
+          <div className="flex-1 w-full">
+            {/* chỉ số nhân vật = gốc + trang bị, nền tảng cho chiến đấu PvP/NPC sau này */}
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 text-center mb-3">
+              {([
+                ['❤️', 'HP', stats.hp],
+                ['🔮', 'MP', stats.mp],
+                ['⚔️', 'ATK', stats.atk],
+                ['🛡️', 'DEF', stats.def],
+                ['🍀', 'LUCK', stats.luck],
+                ['💪', 'Lực chiến', stats.power],
+              ] as const).map(([e, l, v]) => (
+                <div key={l} className="game-inset px-2 py-1.5">
+                  <div aria-hidden="true">{e}</div>
+                  <div className="text-sm font-extrabold text-[#3d3222]">{v}</div>
+                  <div className="text-[9px] font-bold text-[#8a7550]">{l}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* đai bình thuốc — tích trữ cho hệ thống chiến đấu */}
+            <div className="game-inset p-2.5">
+              <div className="text-[11px] font-extrabold text-[#5c4d33] mb-1.5">
+                🧪 Đai bình thuốc <span className="font-bold text-[#8a7550]">· dùng trong chiến đấu (sắp ra mắt)</span>
               </div>
-            ))}
+              <div className="flex flex-wrap gap-2">
+                {CONSUMABLES.map((c) => {
+                  const count = consumables[c.id] ?? 0
+                  const icon = itemIcon(c.id)
+                  const meta = RARITY_META[c.rarity]
+                  return (
+                    <div
+                      key={c.id}
+                      title={`${c.name} (${meta.label}) — ${c.desc}`}
+                      className="relative w-12 h-12 rounded-lg flex items-center justify-center bg-[#fdf6e3] border-2"
+                      style={{ borderColor: count > 0 ? meta.color : '#d8c9a3', filter: count > 0 ? undefined : 'grayscale(1) opacity(0.5)' }}
+                    >
+                      {icon && <img src={icon} alt={c.name} className="w-8 h-8" style={{ imageRendering: 'pixelated' }} />}
+                      <span className="absolute -bottom-1.5 -right-1.5 min-w-5 h-5 px-1 rounded-full bg-[#5c4d33] text-white text-[10px] font-extrabold flex items-center justify-center">
+                        {count}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -141,10 +241,20 @@ export default function CollectionPage() {
           {ownedGear.map((g) => {
             const equipped = equipment[g.slot] === g.id
             const meta = RARITY_META[g.rarity]
+            const icon = itemIcon(g.id)
             return (
               <div key={g.id} className="game-panel p-4" style={{ boxShadow: equipped ? `0 0 0 3px ${meta.color}` : undefined }}>
                 <div className="flex items-center gap-2.5">
-                  <span className="text-3xl" aria-hidden="true">{g.emoji}</span>
+                  <span
+                    className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0 border-2"
+                    style={{ borderColor: meta.color, background: `${meta.color}1a` }}
+                  >
+                    {icon ? (
+                      <img src={icon} alt="" className="w-9 h-9" style={{ imageRendering: 'pixelated' }} />
+                    ) : (
+                      <span className="text-2xl" aria-hidden="true">{g.emoji}</span>
+                    )}
+                  </span>
                   <div className="flex-1 min-w-0">
                     <div className="font-extrabold text-sm" style={{ color: meta.color }}>{g.name}</div>
                     <div className="text-[10px] font-extrabold" style={{ color: meta.color }}>

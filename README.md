@@ -92,6 +92,7 @@ src/
 
 - Sprite công trình milestone: [Tiny Swords — Pixel Frog](https://pixelfrog-assets.itch.io/tiny-swords) (CC0), tải qua mirror [ZieIony/TinySwords](https://github.com/ZieIony/TinySwords). Các file nằm tại `src/assets/towers/`.
 - Nền parallax (núi băng + các dải mây): [Glacial Mountains — vnitti](https://vnitti.itch.io/glacial-mountains-parallax-background) (CC-BY 4.0 — art by **vnitti**), tại `src/assets/backgrounds/`.
+- Icon vật phẩm trang bị & bình thuốc (32×32 pixel art): tiles của game roguelike [Dungeon Crawl Stone Soup](https://github.com/crawl/crawl) (CC0 — public domain), tại `src/assets/items/` (file đặt tên theo id vật phẩm).
 
 ## 🔮 Hướng phát triển
 

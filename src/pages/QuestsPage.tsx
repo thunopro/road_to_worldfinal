@@ -1,6 +1,6 @@
 import DailyQuestCard from '../components/quests/DailyQuestCard'
 import { DAILY_QUESTS, WEEKLY_QUESTS } from '../data/quests'
-import { rollGearDrop, RARITY_META, type GearItem } from '../data/equipment'
+import { rollConsumableDrop, rollGearDrop, RARITY_META, type GearItem } from '../data/equipment'
 import { STORY_CHAPTERS } from '../data/storyline'
 import { useAppStore } from '../store/useAppStore'
 import { playFanfare } from '../utils/sound'
@@ -15,6 +15,7 @@ export default function QuestsPage() {
   const storyProgress = useAppStore((s) => s.storyProgress)
   const inventory = useAppStore((s) => s.inventory)
   const advanceStory = useAppStore((s) => s.advanceStory)
+  const addConsumable = useAppStore((s) => s.addConsumable)
   const pushToast = useAppStore((s) => s.pushToast)
   const soundOn = useAppStore((s) => s.settings.soundOn)
 
@@ -41,11 +42,17 @@ export default function QuestsPage() {
       dropped = rollGearDrop(inventory, chapter.drop)
     }
     advanceStory(chapter.rewardCoins, dropped?.id ?? null)
+    // mỗi chương hoàn thành tặng kèm 2 bình thuốc ngẫu nhiên cho hành trang chiến đấu
+    const potion1 = rollConsumableDrop()
+    const potion2 = rollConsumableDrop()
+    addConsumable(potion1.id, 1)
+    addConsumable(potion2.id, 1)
+    const potionText = potion1.id === potion2.id ? `2× ${potion1.name}` : `${potion1.name} + ${potion2.name}`
     pushToast({
       title: `Hoàn thành "${chapter.title}"! +${chapter.rewardCoins} xu 🪙`,
-      subtitle: STORY_CHAPTERS[storyProgress + 1]
+      subtitle: `🧪 Nhận thêm ${potionText}. ${STORY_CHAPTERS[storyProgress + 1]
         ? `Chương tiếp theo: ${STORY_CHAPTERS[storyProgress + 1].title}`
-        : 'Bạn đã đi hết kịch bản hiện tại!',
+        : 'Bạn đã đi hết kịch bản hiện tại!'}`,
       tone: 'success',
     })
     if (dropped) {

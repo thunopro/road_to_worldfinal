@@ -42,6 +42,7 @@ interface ProfileRow {
   story_progress: number
   inventory: string[]
   equipment: Record<string, string>
+  consumables: Record<string, number>
 }
 
 function stateToProfilePatch() {
@@ -63,6 +64,7 @@ function stateToProfilePatch() {
     story_progress: s.storyProgress,
     inventory: s.inventory,
     equipment: s.equipment,
+    consumables: s.consumables,
     updated_at: new Date().toISOString(),
   }
 }
@@ -249,6 +251,7 @@ export async function hydrateFromRemote(session: Session): Promise<RemoteProfile
       storyProgress: row.story_progress ?? 0,
       inventory: row.inventory ?? [],
       equipment: row.equipment ?? {},
+      consumables: row.consumables ?? {},
       problems,
     })
     useAppStore.getState().checkStreakOnLoad()

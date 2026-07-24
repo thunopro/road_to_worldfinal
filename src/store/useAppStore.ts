@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware'
 import type { CelebrationPhase, Problem, ToastItem } from '../types'
 import { MILESTONES, FINAL_UNLOCK_COINS, MILESTONE_UNLOCK_COINS } from '../data/milestones'
 import { DEFAULT_EQUIPPED, DEFAULT_OWNED, itemById } from '../data/shop'
-import { gearById } from '../data/equipment'
+import { consumableById, gearById, rollAcDrop, totalPower, RARITY_META, type GearSlot } from '../data/equipment'
 import { daysBetween, localDateKey } from '../utils/dates'
 
 export interface StreakState {
@@ -49,6 +49,8 @@ interface AppState {
   inventory: string[]
   /** trang bị đang mặc theo slot */
   equipment: Record<string, string>
+  /** bình thuốc & vật phẩm tiêu hao: id → số lượng */
+  consumables: Record<string, number>
 
   // ---- transient (không persist) ----
   phase: CelebrationPhase
@@ -70,6 +72,10 @@ interface AppState {
   advanceStory: (rewardCoins: number, droppedGearId: string | null) => void
   /** mặc trang bị từ kho đồ */
   equipGear: (gearId: string) => void
+  /** tháo trang bị đang mặc ở một ô */
+  unequipGear: (slot: GearSlot) => void
+  /** nhận thêm bình thuốc (từ nhiệm vụ / rơi đồ) */
+  addConsumable: (id: string, qty: number) => void
   /** mua học liệu bằng xu, trả về false nếu không đủ */
   buyMaterial: (materialId: string, price: number) => boolean
   setPhase: (phase: CelebrationPhase) => void
@@ -111,6 +117,7 @@ function seedState() {
     storyProgress: 0,
     inventory: [] as string[],
     equipment: {} as Record<string, string>,
+    consumables: {} as Record<string, number>,
   }
 }
 
@@ -169,6 +176,30 @@ export const useAppStore = create<AppState>()(
           if (rewardItem && !owned.includes(rewardItem)) owned = [...owned, rewardItem]
         }
 
+        // thỉnh thoảng quái rơi vật phẩm khi AC — LUCK từ trang bị tăng tỉ lệ
+        let inventory = s.inventory
+        let consumables = s.consumables
+        const drop = rollAcDrop(s.inventory, totalPower(s.equipment).luck)
+        let dropToast: { title: string; subtitle?: string } | null = null
+        if (drop?.kind === 'potion') {
+          consumables = { ...consumables, [drop.potion.id]: (consumables[drop.potion.id] ?? 0) + 1 }
+          dropToast = {
+            title: `🧪 Rơi vật phẩm: ${drop.potion.name}!`,
+            subtitle: `${RARITY_META[drop.potion.rarity].label} · ${drop.potion.desc}`,
+          }
+        } else if (drop?.kind === 'gear') {
+          if (inventory.includes(drop.gear.id)) {
+            coins += 25
+            dropToast = { title: `💰 Rơi ${drop.gear.name} (đã có) → quy đổi +25 xu!` }
+          } else {
+            inventory = [...inventory, drop.gear.id]
+            dropToast = {
+              title: `💥 Rơi trang bị ${RARITY_META[drop.gear.rarity].label}: ${drop.gear.emoji} ${drop.gear.name}!`,
+              subtitle: 'Vào Cửa hàng & Kho đồ để mặc vào nhé.',
+            }
+          }
+        }
+
         set({
           problems: [p, ...s.problems],
           totalAC: s.totalAC + 1,
@@ -177,8 +208,11 @@ export const useAppStore = create<AppState>()(
           milestoneProgress,
           user: { ...s.user, coins, badges },
           collection: { ...s.collection, owned },
+          inventory,
+          consumables,
           pendingUnlock: unlockedRating,
         })
+        if (dropToast) get().pushToast({ ...dropToast, tone: 'success' })
         return { ac: true, unlockedRating }
       },
 
@@ -264,6 +298,21 @@ export const useAppStore = create<AppState>()(
         set({ equipment: { ...s.equipment, [gear.slot]: gearId } })
       },
 
+      unequipGear: (slot) => {
+        const s = get()
+        if (!s.equipment[slot]) return
+        const next = { ...s.equipment }
+        delete next[slot]
+        set({ equipment: next })
+      },
+
+      addConsumable: (id, qty) => {
+        if (!consumableById(id) || qty <= 0) return
+        set((s) => ({
+          consumables: { ...s.consumables, [id]: (s.consumables[id] ?? 0) + qty },
+        }))
+      },
+
       buyMaterial: (materialId, price) => {
         const s = get()
         if (s.inventory.includes(materialId) || s.user.coins < price) return false
@@ -317,6 +366,7 @@ export const useAppStore = create<AppState>()(
         storyProgress: s.storyProgress,
         inventory: s.inventory,
         equipment: s.equipment,
+        consumables: s.consumables,
       }),
     },
   ),
