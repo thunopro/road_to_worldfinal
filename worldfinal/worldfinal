@@ -8,6 +8,7 @@ else
   f="$1"; [[ "$f" != *.* ]] && f="$f.cpp"
 fi
 stty -ixon 2>/dev/null  # let Ctrl+S reach the editor
+export COLORTERM="${COLORTERM:-truecolor}"
 # full-screen: drop kitty's window padding (the empty strip around the editor) while worldfinal runs
 if [ -n "$KITTY_WINDOW_ID" ]; then
   kitten @ set-spacing padding=0 2>/dev/null

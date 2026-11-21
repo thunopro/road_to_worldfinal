@@ -2,6 +2,7 @@
 rem worldfinal [file.cpp] -> CP editor (code | input.txt | output). No arg: first *.cpp in the current folder (A.cpp if none)
 setlocal EnableExtensions
 set "WF=%~dp0"
+if "%COLORTERM%"=="" set "COLORTERM=truecolor"
 
 rem Ensure g++ is on PATH if installed via worldfinal or common MinGW locations
 where g++ >nul 2>&1

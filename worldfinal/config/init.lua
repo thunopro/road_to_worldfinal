@@ -48,7 +48,29 @@ vim.g.loaded_matchparen = 1 -- like editor.matchBrackets = never (lighter)
 vim.cmd("filetype plugin indent on | syntax on")
 
 ---------------------------------------------------------------- theme: VS Code "Dark Modern" (colors copied from dark_modern/dark_plus/dark_vs)
-local function hl(g, v) vim.api.nvim_set_hl(0, g, v) end
+local function hex_to_cterm(hex)
+  if type(hex) ~= "string" then return nil end
+  local r, g, b = hex:match("^#(%x%x)(%x%x)(%x%x)$")
+  if not r then return nil end
+  r, g, b = tonumber(r, 16), tonumber(g, 16), tonumber(b, 16)
+  local function idx(c) return c < 48 and 0 or (c < 115 and 1 or math.floor((c - 35) / 40)) end
+  local ri, gi, bi = idx(r), idx(g), idx(b)
+  local steps = { 0, 95, 135, 175, 215, 255 }
+  local cr, cg, cb = steps[ri + 1], steps[gi + 1], steps[bi + 1]
+  local cdist = (r - cr)^2 + (g - cg)^2 + (b - cb)^2
+  local avg = math.floor((r + g + b) / 3)
+  local gi_gray = math.max(0, math.min(23, math.floor((avg - 8) / 10 + 0.5)))
+  local gv = 8 + gi_gray * 10
+  local gdist = (r - gv)^2 + (g - gv)^2 + (b - gv)^2
+  if gdist < cdist then return 232 + gi_gray end
+  return 16 + 36 * ri + 6 * gi + bi
+end
+local function hl(g, v)
+  local o2 = vim.tbl_extend("force", {}, v)
+  if o2.fg and not o2.ctermfg then o2.ctermfg = hex_to_cterm(o2.fg) end
+  if o2.bg and not o2.ctermbg then o2.ctermbg = hex_to_cterm(o2.bg) end
+  vim.api.nvim_set_hl(0, g, o2)
+end
 local C = { fg = "#cccccc", bg = "#1f1f1f", panel = "#181818", var = "#9cdcfe", fn = "#dcdcaa", ty = "#4ec9b0",
   kw = "#569cd6", ctl = "#c586c0", str = "#ce9178", num = "#b5cea8", cmt = "#6a9955", esc = "#d7ba7d", const = "#4fc1ff" }
 local function theme()
@@ -86,6 +108,7 @@ local function theme()
   hl("OutOk", { fg = "#89d185", bold = true }); hl("OutInfo", { fg = "#569cd6" })
 end
 theme()
+vim.api.nvim_create_autocmd({ "ColorScheme", "VimEnter", "UIEnter" }, { callback = theme })
 -- names the file itself defines (like clangd semantic tokens in VS Code): macros = blue, typedef / using /
 -- struct / class / template params = teal, const / constexpr variables = bright blue. re-scanned while typing (debounced)
 local SYN_ARGS = {}
