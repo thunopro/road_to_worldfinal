@@ -1,0 +1,27 @@
+{
+  "template_virtualtree": {
+    "prefix": "template_virtualtree",
+    "body": [
+      "vi vertices;",
+      "",
+      "sort(vertices.begin(), vertices.end(), [&](int u, int v) { return tin[u] < tin[v]; });",
+      "int len = vertices.size();",
+      "for (int i = 0; i < len - 1; i++) vertices.emplace_back(lca(vertices[i], vertices[i + 1]));",
+      "",
+      "sort(vertices.begin(), vertices.end(), [&](int u, int v) { return tin[u] < tin[v]; });",
+      "vertices.resize(unique(vertices.begin(), vertices.end()) - vertices.begin());",
+      "",
+      "stack<int> stk;",
+      "for (auto x : vertices) {",
+      "    if (stk.empty()) stk.push(x);",
+      "    else {",
+      "        while (!is_parent(stk.top(), x)) stk.pop();",
+      "        adjList[stk.top()].pb(x);",
+      "        stk.push(x);",
+      "    }",
+      "}",
+      "$0"
+    ],
+    "description": "Builds a virtual tree from a given subset of special vertices using LCA and a stack."
+  }
+}

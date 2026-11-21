@@ -1,0 +1,26 @@
+{
+  "CP_template": {
+    "prefix": "template_fastseg",
+    "body": [
+      "int T [maxn * 4] ;",
+      "void update ( int pos , long long val )",
+      "{",
+      "    pos += n ;",
+      "    T [pos] = val ;",
+      "    for ( pos >>= 1 ; pos ; pos >>= 1 ) T [pos] = max ( T [pos << 1] , T [pos << 1 | 1] ) ;",
+      "}",
+      "int get ( int l , int r )",
+      "{",
+      "    int res = -INF ;",
+      "    for ( l += n , r += n + 1 ; l < r ; l >>= 1 , r >>= 1 )",
+      "    {",
+      "        if ( l & 1 ) res = max ( res , T [l ++] ) ;",
+      "        if ( r & 1 ) res = max ( res , T [-- r] ) ;",
+      "    }",
+      "    return res ;",
+      "}",
+      "$1"
+    ],
+    "description": "C++ Competitive Programming Template - fast segment tree (iterative max)"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "CP_template": {
+    "prefix": "template_trie",
+    "body": [
+      "struct TRIE {",
+      "    int nxt[1000009][26];",
+      "    int End[1000009];",
+      "    int num_node;",
+      "",
+      "    void add(string s) {",
+      "        int cur = 0;",
+      "        for (auto ch : s) {",
+      "            int x = ch - 'a';",
+      "            if (nxt[cur][x] == 0) nxt[cur][x] = ++num_node;",
+      "            cur = nxt[cur][x];",
+      "        }",
+      "        End[cur]++;",
+      "    }",
+      "};",
+      "",
+      "TRIE trie;"
+    ],
+    "description": "C++ TRIE Template (prefix tree)"
+  }
+}

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# worldfinal [file.cpp] -> CP editor (code | input.txt | output). No arg: open the first *.cpp in the current dir (A.cpp if none)
+WF="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+if [ -z "$1" ]; then
+  f=$(ls -1 ./*.cpp 2>/dev/null | LC_ALL=C sort | head -n1)
+  [ -z "$f" ] && f="A.cpp"
+else
+  f="$1"; [[ "$f" != *.* ]] && f="$f.cpp"
+fi
+stty -ixon 2>/dev/null  # let Ctrl+S reach the editor
+# full-screen: drop kitty's window padding (the empty strip around the editor) while worldfinal runs
+if [ -n "$KITTY_WINDOW_ID" ]; then
+  kitten @ set-spacing padding=0 2>/dev/null
+  trap 'kitten @ set-spacing padding=default 2>/dev/null' EXIT
+fi
+"$WF/nvim-linux/bin/nvim" --noplugin -u "$WF/config/init.lua" -i NONE "$f"

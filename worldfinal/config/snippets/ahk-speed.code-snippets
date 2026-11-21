@@ -1,0 +1,25 @@
+{
+  "AHK v2 Speed Template": {
+    "scope": "ahk,ahk2,autohotkey",
+    "prefix": "ahktemplate",
+    "body": [
+      "#Requires AutoHotkey v2.0",
+      "#SingleInstance Force",
+      "",
+      "ListLines 0",
+      "ProcessSetPriority \"High\"",
+      "SetControlDelay -1",
+      "SetWinDelay -1",
+      "SetMouseDelay -1",
+      "SetKeyDelay -1, -1",
+      "",
+      "#HotIf WinActive(\"Minecraft\")",
+      "",
+      "$0",
+      "",
+      "#HotIf",
+      "^Esc::ExitApp"
+    ],
+    "description": "Template tối ưu tốc độ tối đa cho AHK v2 trong Minecraft"
+  }
+}

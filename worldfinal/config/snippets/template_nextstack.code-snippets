@@ -1,0 +1,21 @@
+{
+  "template_nextstack": {
+    "prefix": "template_nextstack",
+    "body": [
+      "vector<int> Next_stack ( int a[] , int n )",
+      "{",
+      "    vi res (n+1) ;",
+      "    stack<int> stk ;",
+      "    for ( int i = n ; i >= 1 ; --i )",
+      "    {",
+      "        while ( !stk.empty() && a[stk.top()] <= a[i] ) stk.pop() ;",
+      "        res[i] = stk.empty() ? n + 1 : stk.top() ;",
+      "        stk.push(i) ;",
+      "    }",
+      "    return res ;",
+      "}",
+      "$0"
+    ],
+    "description": "Monotonic stack: next greater element to the right (1-indexed; returns n+1 if none)."
+  }
+}

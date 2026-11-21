@@ -1,0 +1,26 @@
+{
+  "template_seg": {
+    "prefix": "template_seg",
+    "body": [
+      "int T[maxn * 4];",
+      "",
+      "void update(int id, int l, int r, int pos, int w) {",
+      "    if (l > pos || r < pos) return;",
+      "    if (l == r) {",
+      "        T[id] = w;",
+      "        return;",
+      "    }",
+      "    update(left, l, mid, pos, w);",
+      "    update(right, mid + 1, r, pos, w);",
+      "    T[id] = min(T[left], T[right]);",
+      "}",
+      "",
+      "int get(int id, int l, int r, int u, int v) {",
+      "    if (l > v || r < u) return INF;",
+      "    if (u <= l && r <= v) return T[id];",
+      "    return min(get(left, l, mid, u, v), get(right, mid + 1, r, u, v));",
+      "}"
+    ],
+    "description": "Segment Tree template with update and get (range min query)."
+  }
+}

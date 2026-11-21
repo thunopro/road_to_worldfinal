@@ -1,0 +1,21 @@
+{
+  "CP_template": {
+    "prefix": "template_mapping",
+    "body": [
+      "void mapping ()",
+      "{",
+      "    vi v ;",
+      "    for ( int i = 1 ; i <= n ; i ++ ) v . pb (a[i]) ;",
+      "    sort (v.begin(),v.end()) ;",
+	  "    v.resize (unique(v.begin(),v.end())-v.begin()) ; ", 
+      "    for ( int i = 1 ; i <= n ; i ++ )",
+      "    {",
+      "        int x = _lower(a[i]) ;",
+      "        a [i] = x ;",
+      "    }",
+      "}",
+      "$1"
+    ],
+    "description": "C++ Competitive Programming Template - mapping function"
+  }
+}

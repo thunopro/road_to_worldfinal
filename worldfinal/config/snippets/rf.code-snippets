@@ -1,0 +1,10 @@
+{
+  "CP_template": {
+    "prefix": "runfile",
+    "body": [ 
+	  "freopen(\"bai1.inp\",\"r\",stdin);",
+	  "$1", 
+    ],
+    "description": "C++ Competitive Programming Template"
+  }
+}

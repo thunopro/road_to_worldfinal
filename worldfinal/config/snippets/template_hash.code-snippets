@@ -1,0 +1,28 @@
+{
+  "CP_template": {
+    "prefix": "template_hash",
+    "body": [
+      "int hashA[maxn];",
+      "int POW[maxn];",
+      "",
+      "void prepare() {",
+      "    const int N = 1e6;",
+      "    POW[0] = 1;",
+      "    for (int i = 1; i <= N; i++)",
+      "        POW[i] = POW[i - 1] * 53 % mod;",
+      "}",
+      "",
+      "void build_hash(int *a, string s) {",
+      "    n = s.size();",
+      "    s = ' ' + s;",
+      "    for (int i = 1; i <= n; i++)",
+      "        a[i] = (a[i - 1] * 53 + s[i]) % mod;",
+      "}",
+      "",
+      "int get_hash(int *a, int l, int r) {",
+      "    return (a[r] - a[l - 1] * POW[r - l + 1] + mod * mod) % mod;",
+      "}"
+    ],
+    "description": "C++ String Hash Template (Polynomial Rolling Hash)"
+  }
+}

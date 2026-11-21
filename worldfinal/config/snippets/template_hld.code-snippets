@@ -1,0 +1,32 @@
+{
+  "CP_template": {
+    "prefix": "template_hld",
+    "body": [
+      "int head [maxn] , ver [maxn] ;",
+      "void hld ( int u , int h = 1 )",
+      "{",
+      "    static int timeDfs = 0 ;",
+      "    head [u] = h ;",
+      "    tin [u] = ++ timeDfs ;",
+      "    ver [timeDfs] = u ;",
+      "    if ( bigChild [u] != -1 ) hld ( bigChild [u] , h ) ;",
+      "    for ( auto v : adjList [u] ) if ( v != par [u] [0] && v != bigChild [u] ) hld ( v , v ) ;",
+      "}",
+      "int SOLVE_HLD ( int u , int v )",
+      "{",
+      "    int res = 0 ;",
+      "    while ( head [u] != head [v] )",
+      "    {",
+      "        if ( dep [head [u]] < dep [head [v]] ) swap ( u , v ) ;",
+      "        chkmax ( res , get ( tin [head [u]] , tin [u] ) ) ;",
+      "        u = par [head [u]] [0] ;",
+      "    }",
+      "    if ( dep [u] > dep [v] ) swap ( u , v ) ;",
+      "    chkmax ( res , get ( tin [u] , tin [v] ) ) ;",
+      "    return res ;",
+      "}",
+      "$1"
+    ],
+    "description": "C++ Competitive Programming Template - Heavy Light Decomposition (query max)"
+  }
+}

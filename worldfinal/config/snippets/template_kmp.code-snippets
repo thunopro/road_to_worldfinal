@@ -1,0 +1,22 @@
+{
+  "CP_template": {
+    "prefix": "template_kmp",
+    "body": [
+      "int kmp[maxn];",
+      "",
+      "void build_kmp() {",
+      "    int cur = 0;",
+      "    for (int i = 2; i <= m; i++) {",
+      "        while (cur > 0 && t[i] != t[cur + 1]) cur = kmp[cur];",
+      "        kmp[i] = cur = cur + (t[i] == t[cur + 1]);",
+      "    }",
+      "}",
+      "",
+      "int match(int cur, char ch) {",
+      "    while (cur > 0 && ch != t[cur + 1]) cur = kmp[cur];",
+      "    return cur + (ch == t[cur + 1]);",
+      "}"
+    ],
+    "description": "C++ KMP Template (prefix function and matching)"
+  }
+}

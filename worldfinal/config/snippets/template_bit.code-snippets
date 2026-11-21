@@ -1,0 +1,28 @@
+{
+  "CP_template": {
+    "prefix": "template_bit",
+    "body": [
+      "struct BIT {",
+      "    int n ; ",
+      "    vi bit ; ",
+      "    BIT ( int n = 0 ) { init (n) ; } ",
+      "    void init ( int _n ) ",
+      "    {",
+      "        n = _n ; ",
+      "        bit.assign(n+1,0) ; ",
+      "    }",
+      "    void update ( int x , int w ) ",
+      "    {",
+      "        while ( x <= n ) bit [x] += w , x += (x&-x) ; ",
+      "    }",
+      "    int get ( int x ) ",
+      "    {",
+      "        int res = 0 ; ",
+      "        while ( x ) res += bit [x] , x -= (x&-x) ; ",
+      "        return res ; ",
+      "    }",
+      "};"
+    ],
+    "description": "C++ BIT (Fenwick Tree) Template"
+  }
+}

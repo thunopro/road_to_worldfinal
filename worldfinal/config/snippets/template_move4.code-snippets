@@ -1,0 +1,16 @@
+{
+  "CP_template": {
+    "prefix": "template_move4",
+    "body": [ 
+	"int dx [] = {1,1,-1,-1,2,2,-2,-2} ;",
+	"int dy [] = {2,-2,2,-2,1,-1,1,-1} ;",
+
+	"bool inside ( int x , int y ) ", 
+	"{",
+    "   return ( x >= 1 && x <= n && y >= 1 && y <= n ) ;",
+	"}",
+	  "$1", 
+    ],
+    "description": "C++ Competitive Programming Template"
+  }
+}
